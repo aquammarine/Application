@@ -26,10 +26,10 @@ export class AuthService {
             throw new BadRequestException("Invalid password");
         }
 
-        const payload = { sub: user.id, email: user.email };
-        return {
-            access_token: await this.jwtService.sign(payload),
-        };
+        const tokens = await this.getTokens(user.id, user.email);
+        await this.updateRefreshToken(user.id, tokens.refresh_token);
+
+        return tokens;
     }
 
     async register(dto: RegisterDto) {
@@ -54,7 +54,8 @@ export class AuthService {
             },
         });
 
-        const token = await this.signToken(user.id, user.email);
+        const tokens = await this.getTokens(user.id, user.email);
+        await this.updateRefreshToken(user.id, tokens.refresh_token);
 
         return {
             user: {
@@ -63,14 +64,45 @@ export class AuthService {
                 firstName: user.firstName,
                 lastName: user.lastName,
             },
-            access_token: token,
+            ...tokens,
         };
     }
 
-    private signToken(userId: string, email: string) {
-        return this.jwtService.signAsync({
-            sub: userId,
-            email,
+    async getTokens(userId: string, email: string) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(
+                { sub: userId, email },
+                { secret: process.env.JWT_SECRET, expiresIn: '15m' },
+            ),
+            this.jwtService.signAsync(
+                { sub: userId, email },
+                { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+            ),
+        ]);
+
+        return { access_token: accessToken, refresh_token: refreshToken }
+    }
+
+    async logout(userId: string) {
+        await this.prisma.user.updateMany({
+            where: {
+                id: userId,
+                refreshToken: {
+                    not: null,
+                },
+            },
+            data: {
+                refreshToken: null,
+            },
+        });
+    }
+
+    async updateRefreshToken(userId: string, refreshToken: string) {
+        const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken: hashedRefreshToken },
         });
     }
 }

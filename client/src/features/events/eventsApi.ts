@@ -70,6 +70,10 @@ export const eventsApi = createApi({
             query: () => '/events/public',
             providesTags: ['Event'],
         }),
+        getMyEvents: builder.query<any, void>({
+            query: () => '/events/my',
+            providesTags: ['Event'],
+        }),
         getEventById: builder.query({
             query: (id) => `/events/${id}`,
             providesTags: (_result, _error, id) => [{ type: 'Event', id }],
@@ -94,6 +98,7 @@ export const eventsApi = createApi({
 export const {
     useCreateEventMutation,
     useGetPublicEventsQuery,
+    useGetMyEventsQuery,
     useGetEventByIdQuery,
     useJoinEventMutation,
     useLeaveEventMutation

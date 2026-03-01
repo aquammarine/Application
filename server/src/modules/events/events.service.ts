@@ -127,4 +127,32 @@ export class EventsService {
 
     return this.prisma.event.delete({ where: { id } });
   }
+
+  async findMyEvents(userId: string) {
+    return this.prisma.event.findMany({
+      where: {
+        OR: [
+          { organizerId: userId },
+          {
+            participants: {
+              some: { userId },
+            },
+          },
+        ],
+      },
+      include: {
+        _count: {
+          select: { participants: true },
+        },
+        organizer: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: { dateTime: 'asc' },
+    });
+  }
 }

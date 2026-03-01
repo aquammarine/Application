@@ -21,6 +21,12 @@ export class EventsController {
     return this.eventsService.findAllPublic(user?.id);
   }
 
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  findAllMy(@CurrentUser() user: User) {
+    return this.eventsService.findMyEvents(user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user?: User) {
     return this.eventsService.findOne(id, user?.id);

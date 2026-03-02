@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -10,6 +11,7 @@ export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
         private readonly prisma: PrismaService,
+        private readonly config: ConfigService,
     ) { }
 
     async login(dto: LoginDto) {
@@ -80,11 +82,17 @@ export class AuthService {
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 { sub: userId, email },
-                { secret: process.env.JWT_SECRET, expiresIn: '15m' },
+                {
+                    secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+                    expiresIn: '15m'
+                },
             ),
             this.jwtService.signAsync(
                 { sub: userId, email },
-                { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+                {
+                    secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+                    expiresIn: '7d'
+                },
             ),
         ]);
 

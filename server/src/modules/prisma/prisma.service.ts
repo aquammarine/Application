@@ -10,11 +10,7 @@ dotenv.config();
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
     constructor() {
         const pool = new pg.Pool({
-            user: process.env.DB_USER,
-            host: process.env.DB_HOST,
-            database: process.env.DB_NAME,
-            password: process.env.DB_PASSWORD,
-            port: process.env.DB_PORT,
+            connectionString: process.env.DATABASE_URL,
         });
 
         const adapter = new PrismaPg(pool);

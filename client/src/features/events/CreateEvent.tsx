@@ -13,7 +13,6 @@ const CreateEvent: React.FC = () => {
     const navigate = useNavigate();
     const [createEvent, { isLoading }] = useCreateEventMutation();
 
-    // Split date and time for the UI, will combine for API
     const [formData, setFormData] = useState({
         title: '',
         description: '',

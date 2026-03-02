@@ -20,7 +20,6 @@ const baseQueryWithReauth: BaseQueryFn<
     let result = await baseQuery(args, api, extraOptions);
 
     if (result.error && result.error.status === 401) {
-        // try to get a new token
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
             const refreshResult: any = await baseQuery(
@@ -34,15 +33,12 @@ const baseQueryWithReauth: BaseQueryFn<
             );
 
             if (refreshResult.data) {
-                // store the new tokens
                 const { access_token, refresh_token } = refreshResult.data;
                 localStorage.setItem('access_token', access_token);
                 localStorage.setItem('refresh_token', refresh_token);
 
-                // retry the initial query
                 result = await baseQuery(args, api, extraOptions);
             } else {
-                // refresh failed - logout the user
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 localStorage.removeItem('user');

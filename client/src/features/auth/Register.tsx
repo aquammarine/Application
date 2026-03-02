@@ -44,7 +44,6 @@ const Register: React.FC = () => {
         e.preventDefault();
         if (!isFormValid) return;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { confirmPassword, ...registerData } = formData;
         dispatch(register(registerData));
     };

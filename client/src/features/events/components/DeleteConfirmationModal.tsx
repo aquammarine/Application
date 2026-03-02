@@ -21,13 +21,11 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-x-hidden overflow-y-auto outline-none">
-            {/* Backdrop */}
             <div
                 className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
                 onClick={onClose}
             />
 
-            {/* Modal */}
             <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl shadow-slate-900/10 border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
                 <div className="absolute top-6 right-6">
                     <button

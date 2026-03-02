@@ -92,7 +92,6 @@ const MyEvents: React.FC = () => {
 
     return (
         <div className="h-full flex flex-col pt-6 pb-12 animate-in fade-in duration-500 overflow-hidden px-4 md:px-6">
-            {/* Header Section */}
             <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
                 <div>
                     <h1 className="text-[34px] font-black text-slate-900 tracking-tight">My Events</h1>
@@ -100,7 +99,6 @@ const MyEvents: React.FC = () => {
                 </div>
             </div>
 
-            {/* Toolbar Section */}
             <div className="mb-10 flex flex-col md:flex-row items-center justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
@@ -154,7 +152,6 @@ const MyEvents: React.FC = () => {
                 </div>
             </div>
 
-            {/* View Content */}
             <div className="flex-1 min-h-0">
                 {view === Views.MONTH ? (
                     <div className="h-full bg-white rounded-[32px] border border-slate-100 p-1 shadow-xl shadow-slate-200/30 overflow-hidden flex flex-col">

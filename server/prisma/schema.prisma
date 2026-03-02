@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,33 +7,30 @@ datasource db {
 }
 
 model User {
-  id             String          @id @default(uuid())
-  email          String          @unique
-  password       String
-  refreshToken   String?
-  firstName      String
-  lastName       String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  
-  organizedEvents Event[]        @relation("OrganizedEvents")
+  id              String        @id @default(uuid())
+  email           String        @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  firstName       String
+  lastName        String
+  password        String
+  refreshToken    String?
+  organizedEvents Event[]       @relation("OrganizedEvents")
   participations  Participant[]
 }
 
 model Event {
-  id          String        @id @default(uuid())
-  title       String
-  description String
-  dateTime    DateTime
-  location    String
-  capacity    Int?          // null means unlimited
-  isPublic    Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  organizerId String
-  organizer   User          @relation("OrganizedEvents", fields: [organizerId], references: [id], onDelete: Cascade)
-  
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  dateTime     DateTime
+  location     String
+  capacity     Int?
+  isPublic     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  organizerId  String
+  organizer    User          @relation("OrganizedEvents", fields: [organizerId], references: [id], onDelete: Cascade)
   participants Participant[]
 }
 
@@ -48,9 +38,8 @@ model Participant {
   userId   String
   eventId  String
   joinedAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
 }

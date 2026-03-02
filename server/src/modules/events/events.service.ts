@@ -8,12 +8,29 @@ export class EventsService {
   constructor(private readonly prisma: PrismaService) { }
 
   async create(createEventDto: CreateEventDto, organizerId: string) {
-    return this.prisma.event.create({
-      data: {
-        ...createEventDto,
-        dateTime: new Date(createEventDto.dateTime),
-        organizerId,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const { title, description, location, capacity, isPublic, dateTime } = createEventDto;
+
+      const event = await tx.event.create({
+        data: {
+          title,
+          description,
+          location,
+          capacity: capacity ? Number(capacity) : null,
+          isPublic: isPublic !== undefined ? isPublic : true,
+          dateTime: new Date(dateTime),
+          organizerId,
+        },
+      });
+
+      await tx.participant.create({
+        data: {
+          eventId: event.id,
+          userId: organizerId,
+        },
+      });
+
+      return event;
     });
   }
 

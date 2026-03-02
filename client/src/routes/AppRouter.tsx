@@ -4,6 +4,7 @@ import Register from '../features/auth/Register';
 import EventList from '../features/events/EventList';
 import EventDetails from '../features/events/EventDetails';
 import CreateEvent from '../features/events/CreateEvent';
+import EditEvent from '../features/events/EditEvent';
 import MyEvents from '../features/calendar/MyEvents';
 import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../components/layouts/MainLayout';
@@ -23,6 +24,7 @@ const AppRouter = () => {
                     <Route element={<ProtectedRoute />}>
                         <Route path="/calendar" element={<MyEvents />} />
                         <Route path="/events/create" element={<CreateEvent />} />
+                        <Route path="/events/:id/edit" element={<EditEvent />} />
                     </Route>
                 </Route>
 

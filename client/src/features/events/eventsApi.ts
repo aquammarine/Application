@@ -92,6 +92,21 @@ export const eventsApi = createApi({
             }),
             invalidatesTags: (_result, _error, id) => ['Event', { type: 'Event', id }],
         }),
+        updateEvent: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/events/${id}`,
+                method: 'PATCH',
+                body: patch,
+            }),
+            invalidatesTags: (_result, _error, { id }) => ['Event', { type: 'Event', id }],
+        }),
+        deleteEvent: builder.mutation({
+            query: (id) => ({
+                url: `/events/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Event'],
+        }),
     }),
 });
 
@@ -101,5 +116,7 @@ export const {
     useGetMyEventsQuery,
     useGetEventByIdQuery,
     useJoinEventMutation,
-    useLeaveEventMutation
+    useLeaveEventMutation,
+    useUpdateEventMutation,
+    useDeleteEventMutation
 } = eventsApi;

@@ -1,19 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, ChevronLeft, Clock, User as UserIcon, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Users, ChevronLeft, Clock, User as UserIcon, Loader2, Edit2, Trash2 } from 'lucide-react';
 import Button from '../../components/common/Button';
-import { useGetEventByIdQuery, useJoinEventMutation, useLeaveEventMutation } from './eventsApi';
+import { useGetEventByIdQuery, useJoinEventMutation, useLeaveEventMutation, useDeleteEventMutation } from './eventsApi';
 import { useAppSelector } from '../../app/hooks';
+import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 
 const EventDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { accessToken } = useAppSelector(state => state.auth);
+    const { accessToken, user: currentUser } = useAppSelector(state => state.auth);
     const isLoggedIn = !!accessToken;
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const { data: event, isLoading, error } = useGetEventByIdQuery(id!);
     const [joinEvent, { isLoading: isJoining }] = useJoinEventMutation();
     const [leaveEvent, { isLoading: isLeaving }] = useLeaveEventMutation();
+    const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
 
     if (isLoading) {
         return (
@@ -37,16 +41,51 @@ const EventDetails: React.FC = () => {
     }
 
     const date = new Date(event.dateTime);
+    const isOrganizer = currentUser?.id === event.organizerId;
+
+    const handleDelete = async () => {
+        try {
+            await deleteEvent(id).unwrap();
+            navigate('/events');
+        } catch (err) {
+            console.error('Failed to delete event:', err);
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-6">
-            <button
-                onClick={() => navigate('/events')}
-                className="flex items-center gap-2 text-slate-800 font-bold text-sm mb-8 hover:text-slate-900 transition-colors group"
-            >
-                <ChevronLeft size={18} />
-                Back to Events
-            </button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <button
+                    onClick={() => navigate('/events')}
+                    className="flex items-center gap-2 text-slate-800 font-bold text-sm hover:text-slate-900 transition-colors group"
+                >
+                    <ChevronLeft size={18} />
+                    Back to Events
+                </button>
+
+                {isOrganizer && (
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate(`/events/${id}/edit`)}
+                            icon={Edit2}
+                            iconPosition="left"
+                            className="!rounded-xl border-slate-200 !py-2 !px-4 text-xs font-bold"
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsDeleteModalOpen(true)}
+                            icon={Trash2}
+                            iconPosition="left"
+                            className="!rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 !py-2 !px-4 text-xs font-bold"
+                        >
+                            Delete
+                        </Button>
+                    </div>
+                )}
+            </div>
 
             <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden">
                 <div className="h-48 sm:h-64 bg-indigo-600 flex items-center justify-center relative">
@@ -136,27 +175,29 @@ const EventDetails: React.FC = () => {
 
                                 <div className="pt-2">
                                     {isLoggedIn ? (
-                                        event.isJoined ? (
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => leaveEvent(event.id)}
-                                                isLoading={isLeaving}
-                                                disabled={isJoining}
-                                                fullWidth
-                                                className="!rounded-2xl border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200"
-                                            >
-                                                Leave Event
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={() => joinEvent(event.id)}
-                                                isLoading={isJoining}
-                                                disabled={event.isFull || isLeaving}
-                                                fullWidth
-                                                className={`!rounded-2xl shadow-lg shadow-indigo-100 ${event.isFull ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                            >
-                                                {event.isFull ? 'Event Full' : 'Join Event'}
-                                            </Button>
+                                        !isOrganizer && (
+                                            event.isJoined ? (
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => leaveEvent(event.id)}
+                                                    isLoading={isLeaving}
+                                                    disabled={isJoining}
+                                                    fullWidth
+                                                    className="!rounded-2xl border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200"
+                                                >
+                                                    Leave Event
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    onClick={() => joinEvent(event.id)}
+                                                    isLoading={isJoining}
+                                                    disabled={event.isFull || isLeaving}
+                                                    fullWidth
+                                                    className={`!rounded-2xl shadow-lg shadow-indigo-100 ${event.isFull ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                                >
+                                                    {event.isFull ? 'Event Full' : 'Join Event'}
+                                                </Button>
+                                            )
                                         )
                                     ) : (
                                         <div className="text-center p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
@@ -170,12 +211,25 @@ const EventDetails: React.FC = () => {
                                             </Button>
                                         </div>
                                     )}
+
+                                    {isOrganizer && (
+                                        <div className="text-center p-4 bg-indigo-50 rounded-2xl border border-dashed border-indigo-200">
+                                            <p className="text-xs font-bold text-indigo-600">You are organizing this event</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                isLoading={isDeleting}
+            />
         </div>
     );
 };

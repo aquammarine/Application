@@ -89,7 +89,7 @@ const EventDetails: React.FC = () => {
 
             <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden">
                 <div className="h-48 sm:h-64 bg-indigo-600 flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-700 opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#6366F0] to-indigo-700 opacity-90" />
                     <div className="relative z-10 px-6 sm:px-10 text-center">
                         <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">
                             Event Details

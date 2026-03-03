@@ -52,7 +52,7 @@ const Navbar: React.FC = () => {
                                     onClick={() => navigate('/events/create')}
                                     icon={Plus}
                                     iconPosition="left"
-                                    className="!rounded-xl !py-2.5 !px-5 !bg-indigo-600 hover:!bg-indigo-700 !border-none !text-white font-bold shadow-sm shadow-indigo-500/10"
+                                    className="!rounded-xl !py-2.5 !px-5 !bg-[#6366F0] hover:!bg-indigo-600 !border-none !text-white font-bold shadow-sm shadow-[#6366F0]/10"
                                 >
                                     Create Event
                                 </Button>

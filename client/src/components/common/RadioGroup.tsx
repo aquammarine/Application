@@ -48,7 +48,7 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
                         />
                         <div
                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${value === option.value
-                                ? 'border-indigo-500 bg-indigo-500'
+                                ? 'border-[#6366F0] bg-[#6366F0]'
                                 : 'border-slate-300 group-hover:border-slate-400 bg-white'
                                 }`}
                         >

@@ -54,7 +54,7 @@ const EventList: React.FC = () => {
                         placeholder="Search events..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-white border border-slate-100 rounded-[14px] py-3.5 pl-14 pr-5 text-[16px] font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/20 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+                        className="w-full bg-white border border-slate-100 rounded-[14px] py-3.5 pl-14 pr-5 text-[16px] font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-[#6366F0]/5 focus:border-[#6366F0]/20 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
                     />
                 </div>
             </div>

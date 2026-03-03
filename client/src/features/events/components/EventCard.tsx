@@ -97,14 +97,14 @@ const EventCard: React.FC<EventCardProps> = ({
                             isLoading={isJoining}
                             disabled={event.isFull || isLeaving}
                             fullWidth
-                            className={`!py-3 !rounded-[10px] !bg-[#10b981] hover:!bg-[#059669] !border-none text-white font-bold shadow-sm ${event.isFull ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`!py-3 !rounded-[10px] !bg-[#17A148] hover:!bg-[#108a40] !border-none text-white shadow-sm ${event.isFull ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {event.isFull ? 'Full' : 'Join Event'}
                         </Button>
                     )
                 ) : (
                     <div className="text-center py-2.5 bg-slate-50 rounded-[10px] border border-dashed border-slate-200">
-                        <span className="text-[13px] font-bold text-slate-400 uppercase tracking-wider">Login to Join</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Login to Join</span>
                     </div>
                 )}
             </div>

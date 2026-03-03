@@ -125,25 +125,25 @@ const MyEvents: React.FC = () => {
                         onClick={() => navigate('/events/create')}
                         icon={Plus}
                         iconPosition="left"
-                        className="!rounded-xl !py-2.5 !px-6 !bg-[#6366f1] hover:!bg-indigo-700 !border-none !text-white font-bold shadow-sm shadow-indigo-100"
+                        className="!rounded-xl !py-2.5 !px-6 !bg-[#6366F0] hover:!bg-indigo-700 !border-none !text-white font-bold shadow-sm shadow-indigo-100"
                     >
                         Create Event
                     </Button>
-                    <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-2 p-1 rounded-xl">
                         <button
                             onClick={() => setView(Views.MONTH)}
-                            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${view === Views.MONTH
-                                ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-                                : 'text-slate-500 hover:text-slate-800'
+                            className={`px-6 py-2 rounded-lg text-sm font-bold ${view === Views.MONTH
+                                ? 'bg-[#6366F0] text-white shadow-md shadow-indigo-100/50'
+                                : 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
                                 }`}
                         >
                             Month
                         </button>
                         <button
                             onClick={() => setView(Views.WEEK)}
-                            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${view === Views.WEEK
-                                ? 'bg-[#6366f1] text-white shadow-md shadow-indigo-100/50'
-                                : 'text-slate-500 hover:text-slate-800'
+                            className={`px-6 py-2 rounded-lg text-sm font-bold ${view === Views.WEEK
+                                ? 'bg-[#6366F0] text-white shadow-md shadow-indigo-100/50'
+                                : 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
                                 }`}
                         >
                             Week
@@ -227,12 +227,12 @@ const MyEvents: React.FC = () => {
                                                     }}
                                                     className="bg-[#f2f2ff] p-4 rounded-[18px] border border-indigo-50/50 text-[#4f46e5] hover:bg-indigo-100/40 transition-colors shrink-0"
                                                 >
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <span className="text-[11px] font-black opacity-70 tracking-tight">
+                                                    <div className="flex gap-0.5">
+                                                        <span className="text-xs font-black opacity-70 tracking-tight">
                                                             {format(event.start, 'HH:mm')}
                                                         </span>
-                                                        <span className="text-[13px] font-black leading-tight truncate">
-                                                            {event.title}
+                                                        <span className="text-xs font-black opacity-70 leading-tight truncate">
+                                                            {` - ${event.title}`}
                                                         </span>
                                                     </div>
                                                 </div>

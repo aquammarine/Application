@@ -10,10 +10,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private readonly prisma: PrismaService,
         private readonly config: ConfigService
     ) {
+        const secret = config.get<string>('JWT_ACCESS_SECRET');
+        console.log('--- DEBUG JWT SECRET ---');
+        console.log('Value:', secret);
+        console.log('Type:', typeof secret);
+
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: config.get<string>('JWT_ACCESS_SECRET')!,
+            secretOrKey: secret || 'temporary-fallback-for-debug',
         });
     }
 

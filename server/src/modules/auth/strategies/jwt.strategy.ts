@@ -11,12 +11,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private readonly config: ConfigService
     ) {
         const secret = config.get<string>('JWT_ACCESS_SECRET');
-        console.log('--- DEBUG JWT SECRET ---');
-        console.log('Value:', secret);
-        console.log('Type:', typeof secret);
 
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                (req) => req?.cookies?.access_token,
+            ]),
             ignoreExpiration: false,
             secretOrKey: secret || 'temporary-fallback-for-debug',
         });

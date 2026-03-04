@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -27,7 +30,10 @@ async function bootstrap() {
 
   app.enableCors({
     origin: process.env.FRONTEND_URL,
+    credentials: true,
   });
+
+  console.log('CORS SETUP RUNNING');
 
   await app.listen(process.env.PORT ?? 3000);
 }

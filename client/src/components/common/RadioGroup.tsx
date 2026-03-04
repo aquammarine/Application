@@ -11,9 +11,10 @@ interface RadioGroupProps {
     name: string;
     options: RadioOption[];
     value: string | boolean;
-    onChange: (value: any) => void;
+    onChange: (value: string | boolean) => void;
     error?: string;
-    containerClassName?: string;
+    required?: boolean;
+    direction?: 'vertical' | 'horizontal';
 }
 
 const RadioGroup: React.FC<RadioGroupProps> = ({
@@ -23,48 +24,63 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
     value,
     onChange,
     error,
-    containerClassName = '',
+    required = false,
+    direction = 'vertical',
 }) => {
     return (
-        <div className={`space-y-5 ${containerClassName}`}>
+        <div className="flex flex-col gap-1.5">
             {label && (
-                <label className="text-[15px] font-bold text-slate-900 ml-0.5 block mb-2">
+                <label className="text-sm font-bold text-slate-800 ml-0.5 flex items-center gap-1">
                     {label}
+                    {required && <span className="text-[#ef4444] text-base leading-none">*</span>}
                 </label>
             )}
-            <div className="flex flex-col gap-2.5">
-                {options.map((option) => (
-                    <label
-                        key={String(option.value)}
-                        className="group flex items-center gap-3 cursor-pointer transition-all"
-                    >
-                        <input
-                            type="radio"
-                            name={name}
-                            value={String(option.value)}
-                            checked={value === option.value}
-                            onChange={() => onChange(option.value)}
-                            className="hidden"
-                        />
-                        <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${value === option.value
-                                ? 'border-[#6366F0] bg-[#6366F0]'
-                                : 'border-slate-300 group-hover:border-slate-400 bg-white'
-                                }`}
+
+            <div className={`flex gap-2.5 ${direction === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col'}`}>
+                {options.map((option) => {
+                    const isSelected = value === option.value;
+
+                    return (
+                        <label
+                            key={String(option.value)}
+                            className="group flex items-start gap-3 cursor-pointer transition-all"
                         >
-                            {value === option.value && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                            )}
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-semibold text-slate-700 text-[15px] leading-tight transition-colors group-hover:text-slate-900">{option.label}</span>
-                        </div>
-                    </label>
-                ))}
+                            <input
+                                type="radio"
+                                name={name}
+                                value={String(option.value)}
+                                checked={isSelected}
+                                onChange={() => onChange(option.value)}
+                                className="hidden"
+                            />
+                            <div
+                                className={[
+                                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all mt-0.5',
+                                    isSelected
+                                        ? 'border-[#6366F0] bg-[#6366F0]'
+                                        : 'border-slate-300 group-hover:border-slate-400 bg-white',
+                                ].join(' ')}
+                            >
+                                {isSelected && (
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                                )}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="font-semibold text-slate-700 text-[15px] leading-tight transition-colors group-hover:text-slate-900">
+                                    {option.label}
+                                </span>
+                                {option.description && (
+                                    <span className="text-xs text-slate-400 mt-0.5">{option.description}</span>
+                                )}
+                            </div>
+                        </label>
+                    );
+                })}
             </div>
+
             {error && <p className="text-xs text-red-500 font-bold ml-1">{error}</p>}
         </div>
     );
 };
 
-export default RadioGroup;
+export { RadioGroup };

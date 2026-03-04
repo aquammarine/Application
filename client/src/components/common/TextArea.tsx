@@ -1,40 +1,56 @@
 import React from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label?: string;
+    icon?: LucideIcon;
     error?: string;
-    fullWidth?: boolean;
     required?: boolean;
-    containerClassName?: string;
 }
 
 const TextArea: React.FC<TextAreaProps> = ({
     label,
+    icon: Icon,
     error,
-    fullWidth = false,
     required = false,
-    containerClassName = '',
     className = '',
     ...props
 }) => {
-    const widthStyles = fullWidth ? 'w-full' : '';
+    const hasIcon = !!Icon;
 
     return (
-        <div className={`space-y-2 ${widthStyles} ${containerClassName}`}>
+        <div className="flex flex-col gap-1.5">
             {label && (
-                <label className="text-[14px] font-bold text-slate-800 ml-0.5 flex items-center gap-1">
+                <label className="text-sm font-bold text-slate-800 ml-0.5 flex items-center gap-1">
                     {label}
                     {required && <span className="text-[#ef4444] text-base leading-none">*</span>}
                 </label>
             )}
-            <textarea
-                className={`w-full bg-[#f8fafc] border ${error ? 'border-red-300' : 'border-slate-200/60'
-                    } text-slate-900 rounded-xl py-3 px-4 outline-none focus:bg-white focus:border-[#6366f1] focus:ring-4 focus:ring-[#6366f1]/5 transition-all font-medium placeholder:text-slate-400/60 resize-none min-h-[120px] ${className}`}
-                {...props}
-            />
+
+            <div className="relative">
+                {hasIcon && (
+                    <span className="absolute left-3 top-4 text-slate-400 pointer-events-none">
+                        <Icon size={18} />
+                    </span>
+                )}
+
+                <textarea
+                    className={[
+                        'w-full rounded-xl p-3 outline-none transition-all font-medium resize-none min-h-[120px]',
+                        'bg-[#FCFCFD] border border-[#E5E7EB]',
+                        'focus:bg-white focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/5',
+                        'placeholder:text-slate-400/60',
+                        hasIcon ? 'pl-10' : '',
+                        error ? 'border-red-300' : '',
+                        className,
+                    ].join(' ')}
+                    {...props}
+                />
+            </div>
+
             {error && <p className="text-xs text-red-500 font-bold ml-1">{error}</p>}
         </div>
     );
 };
 
-export default TextArea;
+export { TextArea };

@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Login } from '../../features/Login/index';
-import { Register } from '../../features/Register/index';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Login } from '../../features/Login';
+import { Register } from '../../features/Register';
 import { MainLayout } from '../../components/layouts';
-import { Events } from '../../features/Events/index'
+import { Events } from '../../features/Events';
+import { EventDetails } from '../../components/EventDetails';
 
 const AppRouter = () => {
     return (
@@ -14,16 +15,14 @@ const AppRouter = () => {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Events />} />
                     <Route path="/events" element={<Events />} />
-                    {/* <Route path="/events/:id" element={<EventDetails />} />
+                    <Route path="/events/:id" element={<EventDetails />} />
 
-                    <Route element={<ProtectedRoute />}>
+                    {/* <Route element={<ProtectedRoute />}>
                         <Route path="/calendar" element={<MyEvents />} />
                         <Route path="/events/create" element={<CreateEvent />} />
                         <Route path="/events/:id/edit" element={<EditEvent />} />
                     </Route> */}
                 </Route>
-
-                <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
         </BrowserRouter>
     );

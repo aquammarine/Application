@@ -3,8 +3,8 @@ import type { LucideIcon } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children?: React.ReactNode;
-    onClick?: () => void;
-    variant?: 'primary' | 'secondary' | 'ghost' | 'disabled';
+    onClick?: (e: React.MouseEvent) => void;
+    variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'danger';
     icon?: LucideIcon;
 }
 
@@ -16,13 +16,16 @@ const Button: React.FC<ButtonProps> = ({
     ...props
 }) => {
     const hasCustomBorderColor = className.includes('border-');
-    const baseStyles = `px-4 py-2 rounded-md font-medium transition-all focus:outline-none cursor-pointer border ${hasCustomBorderColor ? '' : 'border-transparent'}`;
+    const hasCustomPadding = className.includes('p-') || className.includes('px-') || className.includes('py-');
+    const baseStyles = `${hasCustomPadding ? '' : 'px-4 py-2'} rounded-md font-medium transition-all
+                        focus:outline-none cursor-pointer border ${hasCustomBorderColor ? '' : 'border-transparent'}`;
 
     const variantStyles = {
         primary: "bg-[#6366F0] hover:bg-[#6366F0]/80 text-white",
         secondary: "bg-[#17A148] hover:bg-[#17A148]/80 text-white",
         ghost: "bg-opacity-0 hover:text-gray-900 text-gray-700",
         disabled: "bg-[#17A148]/50 text-white",
+        danger: "bg-amber-800 text-white"
     };
 
     return (

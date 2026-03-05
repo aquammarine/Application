@@ -67,6 +67,7 @@ export const useAuthStore = create<AuthState>()(
                         error:
                             error.response?.data?.message || 'Registration failed',
                     })
+                    throw error;
                 }
             },
 

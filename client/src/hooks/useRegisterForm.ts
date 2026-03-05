@@ -23,15 +23,18 @@ export const useRegisterForm = () => {
         try {
             const { confirmPassword, ...validated } = registerSchema.parse(form);
             await register(validated);
-        } catch (err) {
-            const zodError = err as ZodError;
-            if (zodError.issues) {
+        } catch (err: any) {
+            if (err?.name === 'ZodError' || err?.issues) {
+                const zodError = err as ZodError;
                 const errors: Partial<Record<keyof RegisterFormData, string>> = {};
                 zodError.issues.forEach((issue) => {
                     const field = issue.path[0] as keyof RegisterFormData;
                     if (!errors[field]) errors[field] = issue.message;
                 });
                 setFieldErrors(errors);
+            } else {
+                const apiErrorMessage = err?.response?.data?.message || err?.message || 'Registration failed';
+                setFieldErrors({ email: apiErrorMessage });
             }
         }
     };

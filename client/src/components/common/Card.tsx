@@ -3,12 +3,13 @@ import React from "react";
 interface CardProps {
     children: React.ReactNode;
     className?: string;
+    onClick?: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ children, className = '' }) => {
+const Card: React.FC<CardProps> = ({ children, className = '', onClick }) => {
     const baseStyles = "bg-white rounded-xl shadow-sm border border-slate-200/60 flex flex-wrap";
     return (
-        <div className={`${baseStyles} ${className}`}>
+        <div className={`${baseStyles} ${className}`} onClick={onClick}>
             {children}
         </div>
     );

@@ -2,6 +2,7 @@ import { Card, Header, InfoItem, Button } from "../common";
 import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
 import { useJoinEvent } from "../../hooks/useJoinEvent";
 import { useAuthStore } from "../../stores/auth.store";
+import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
     id: string;
@@ -18,8 +19,14 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, time, location, participants, capacity, isJoined = false }) => {
     const { handleJoin, handleLeave, isPending } = useJoinEvent();
     const { user } = useAuthStore();
+    const navigate = useNavigate();
+
+    const handleCardClick = () => {
+        navigate(`/events/${id}`);
+    };
+
     return (
-        <Card className="p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl">
+        <Card className="p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer" onClick={handleCardClick}>
             <Header
                 title={title}
                 subtitle={description}
@@ -39,7 +46,10 @@ const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, tim
                 <Button
                     variant="ghost"
                     className="w-full border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    onClick={() => handleLeave(id)}
+                    onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleLeave(id);
+                    }}
                     disabled={isPending}
                 >
                     {isPending ? 'Leaving...' : 'Leave Event'}
@@ -52,7 +62,10 @@ const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, tim
                 <Button
                     variant="secondary"
                     className="w-full"
-                    onClick={() => user ? handleJoin(id) : window.location.assign('/login')}
+                    onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        user ? handleJoin(id) : window.location.assign('/login');
+                    }}
                     disabled={isPending}
                 >
                     {isPending ? 'Joining...' : 'Join Event'}

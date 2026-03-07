@@ -5,7 +5,7 @@ interface ErrorProps {
 
 const Error: React.FC<ErrorProps> = ({ message, className = '' }) => {
     return (
-        <p className={`text-red-500 text-center ${className}`}>{message}</p>
+        <p className={`text-red-500 text-sm font-semibold p-0 m-0 ${className}`}>{message}</p>
     );
 };
 

@@ -99,7 +99,9 @@ export const useAuthStore = create<AuthState>()(
                         isLoading: false,
                         user: null,
                         error:
-                            error.response?.data?.message || 'Failed to fetch user',
+                            error.response?.status === 401
+                                ? null
+                                : (error.response?.data?.message || 'Failed to fetch user'),
                     })
                 }
             },

@@ -9,7 +9,7 @@ import { useAuthStore } from "../../stores/auth.store";
 const EventDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { currentEvent, fetchEventById, isLoading, error } = useEventsStore();
+    const { currentEvent, fetchEventById, myEvents, isLoading, error } = useEventsStore();
     const { handleJoin, handleLeave, isPending } = useJoinEvent();
     const { user } = useAuthStore();
 
@@ -45,18 +45,19 @@ const EventDetails: React.FC = () => {
     const participantsCount = currentEvent._count?.participants || 0;
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <Card className="pl-6 flex flex-col gap-2 w-full max-w-2xl rounded-2xl overflow-hidden">
-                <div className="flex gap-4 min-h-[400px]">
-                    <div className="flex flex-col gap-2 w-2/3 py-6">
-                        <Button variant="ghost" className="w-fit px-0" icon={ArrowLeft} onClick={() => navigate(-1)}></Button>
-                        <Header
-                            title={currentEvent.title}
-                            subtitle={currentEvent.description}
-                            variant="md"
-                        />
-                    </div>
-                    <div className="flex flex-col gap-2 bg-slate-100 px-6 py-12 w-1/3">
+        <div className="flex flex-col justify-center items-center h-full gap-4">
+            <div className="w-full max-w-4xl">
+                <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(-1)}>Back</Button>
+            </div>
+            <Card className="pl-6 flex flex-col gap-2 w-full max-w-4xl rounded-2xl overflow-hidden">
+                <div className="flex gap-4">
+                    <Header
+                        title={currentEvent.title}
+                        subtitle={currentEvent.description}
+                        variant="md"
+                        className="w-2/3 mt-6"
+                    />
+                    <div className="flex flex-col gap-2 bg-slate-100 px-6 py-6 w-1/3">
                         <h1 className="font-bold text-gray-600 mb-2">Details:</h1>
                         <InfoItem icon={User} text={`Organizer: ${organizerName}`} />
                         <InfoItem icon={CalendarDays} text={formattedDate} />
@@ -64,35 +65,40 @@ const EventDetails: React.FC = () => {
                         <InfoItem icon={MapPin} text={currentEvent.location} />
                         <InfoItem icon={Users} text={`${participantsCount} / ${currentEvent.capacity ?? 'Unlimited'} participants`} />
 
-                        {currentEvent.isJoined ? (
-                            <Button
-                                variant="danger"
-                                className="mt-auto w-full"
-                                onClick={() => handleLeave(currentEvent.id)}
-                                disabled={isPending}
-                            >
-                                {isPending ? 'Leaving...' : 'Leave Event'}
-                            </Button>
-                        ) : currentEvent.capacity && participantsCount >= currentEvent.capacity ? (
-                            <Button variant="disabled" className="mt-auto w-full" disabled>
-                                Event Full
-                            </Button>
-                        ) : (
-                            <Button
-                                variant="primary"
-                                className="mt-auto w-full"
-                                onClick={() => {
-                                    user ? handleJoin(currentEvent.id) : window.location.assign('/login');
-                                }}
-                                disabled={isPending}
-                            >
-                                {isPending ? 'Joining...' : 'Join Event'}
-                            </Button>
-                        )}
+                        {
+                            currentEvent.organizer?.id === user?.id ? (
+                                <p className="w-full border border-gray-200 rounded-lg p-2 text-center font-semibold text-gray-600 mt-auto bg-neutral-50 px-6 py-2">You are the organizer</p>
+                            ) : currentEvent.organizer?.id !== user?.id &&
+                                myEvents.some(e => e.id === currentEvent.id) ? (
+                                <Button
+                                    variant="danger"
+                                    className="mt-auto w-full"
+                                    onClick={() => handleLeave(currentEvent.id)}
+                                    disabled={isPending}
+                                >
+                                    {isPending ? 'Leaving...' : 'Leave Event'}
+                                </Button>
+                            ) : currentEvent.capacity && participantsCount >= currentEvent.capacity ? (
+                                <Button variant="disabled" className="mt-auto w-full" disabled>
+                                    Event Full
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="secondary"
+                                    className="mt-auto w-full"
+                                    onClick={() => {
+                                        handleJoin(currentEvent.id);
+                                    }}
+                                    disabled={isPending}
+                                >
+                                    {isPending ? 'Joining...' : 'Join Event'}
+                                </Button>
+                            )
+                        }
                     </div>
                 </div>
             </Card>
-        </div>
+        </div >
     );
 };
 

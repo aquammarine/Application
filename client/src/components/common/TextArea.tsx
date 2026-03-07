@@ -1,5 +1,6 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { Label } from './Label';
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label?: string;
@@ -21,10 +22,10 @@ const TextArea: React.FC<TextAreaProps> = ({
     return (
         <div className="flex flex-col gap-1.5">
             {label && (
-                <label className="text-sm font-bold text-slate-800 ml-0.5 flex items-center gap-1">
-                    {label}
-                    {required && <span className="text-[#ef4444] text-base leading-none">*</span>}
-                </label>
+                <Label
+                    text={label}
+                    required={required}
+                />
             )}
 
             <div className="relative">

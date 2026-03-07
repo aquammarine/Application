@@ -1,0 +1,113 @@
+/* Scoped to .rbc-wrapper — does not leak outside the calendar */
+
+.rbc-wrapper .rbc-calendar {
+    font-family: inherit;
+    height: 100%;
+}
+
+/* Hide RBC's built-in toolbar — we render our own */
+.rbc-wrapper .rbc-toolbar {
+    display: none;
+}
+
+/* ── Header row (Sun, Mon…) ── */
+.rbc-wrapper .rbc-header {
+    font-size: 12px;
+    font-weight: 900;
+    color: #4d4d4d;
+    background-color: #F5F4F5;
+    padding: 10px 0;
+    text-align: center;
+    border: 0;
+}
+
+/* ── View containers ── */
+.rbc-wrapper .rbc-month-view,
+.rbc-wrapper .rbc-time-view {
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    overflow: hidden;
+    background: white;
+}
+
+/* ── Grid lines ── */
+.rbc-wrapper .rbc-month-row {
+    border-top: 1px solid #e2e8f0;
+}
+
+.rbc-wrapper .rbc-day-bg+.rbc-day-bg {
+    border-left: 1px solid #e2e8f0;
+}
+
+/* ── Day backgrounds ── */
+.rbc-wrapper .rbc-off-range-bg {
+    background: #f8fafc;
+}
+
+.rbc-wrapper .rbc-today {
+    background: white;
+}
+
+/* Today's date number gets the indigo left border highlight */
+.rbc-wrapper .rbc-day-bg.rbc-today {
+    border-left: 2px solid #6366f0;
+    border-top: 2px solid #6366f0;
+}
+
+/* ── Date cells ── */
+.rbc-wrapper .rbc-date-cell {
+    font-size: 13px;
+    color: #64748b;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+.rbc-wrapper .rbc-date-cell.rbc-off-range {
+    visibility: hidden;
+}
+
+.rbc-wrapper .rbc-date-cell.rbc-now a {
+    font-weight: 700;
+    color: #6366f0;
+}
+
+/* ── Event pills — light indigo bg matching the screenshot ── */
+.rbc-wrapper .rbc-event {
+    background-color: #eef2ff !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+    box-shadow: none !important;
+}
+
+.rbc-wrapper .rbc-event:focus {
+    outline: 2px solid #6366f0;
+    outline-offset: 1px;
+}
+
+.rbc-wrapper .rbc-event.rbc-selected {
+    background-color: #e0e7ff !important;
+}
+
+/* ── Overflow link ── */
+.rbc-wrapper .rbc-show-more {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6366f0;
+    background: transparent;
+}
+
+/* ── Time view ── */
+.rbc-wrapper .rbc-current-time-indicator {
+    background: #6366f0;
+}
+
+.rbc-wrapper .rbc-time-slot {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.rbc-wrapper .rbc-time-header-content,
+.rbc-wrapper .rbc-time-content {
+    border-left: 1px solid #e2e8f0;
+}

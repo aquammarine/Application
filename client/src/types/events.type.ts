@@ -17,7 +17,6 @@ export interface Event {
     location: string;
     capacity: number | null;
     isPublic: boolean;
-    organizerId: string;
     organizer?: {
         id: string;
         firstName: string;
@@ -28,5 +27,4 @@ export interface Event {
     _count?: {
         participants: number;
     };
-    isJoined?: boolean;
 }

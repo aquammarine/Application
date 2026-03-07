@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { eventsApi } from '../api/events';
+import { eventsApi } from '../api/eventsApi';
 import type { CreateEventDto, Event, UpdateEventDto } from '../types/events.type';
 
 interface EventsState {

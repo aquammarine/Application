@@ -3,6 +3,7 @@ import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
 import { useJoinEvent } from "../../hooks/useJoinEvent";
 import { useAuthStore } from "../../stores/auth.store";
 import { useNavigate } from "react-router-dom";
+import { useEventsStore } from "../../stores/events.store";
 
 interface EventCardProps {
     id: string;
@@ -13,11 +14,11 @@ interface EventCardProps {
     location: string;
     participants: number;
     capacity: number;
-    isJoined?: boolean;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, time, location, participants, capacity, isJoined = false }) => {
+const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, time, location, participants, capacity }) => {
     const { handleJoin, handleLeave, isPending } = useJoinEvent();
+    const { myEvents } = useEventsStore();
     const { user } = useAuthStore();
     const navigate = useNavigate();
 
@@ -26,26 +27,26 @@ const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, tim
     };
 
     return (
-        <Card className="p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer" onClick={handleCardClick}>
+        <Card className="group p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer border-slate-100" onClick={handleCardClick}>
             <Header
                 title={title}
                 subtitle={description}
                 variant="sm"
+                h1ClassName="transition-colors group-hover:text-[#6366F0]"
             />
 
             <div className="flex flex-col gap-2.5 mt-2">
                 <InfoItem icon={CalendarDays} text={date} />
                 <InfoItem icon={Clock} text={time} />
                 <InfoItem icon={MapPin} text={location} />
-                <InfoItem icon={Users} text={`${participants} / ${capacity ?? 'Unlimited'} participants`} />
+                <InfoItem icon={Users} text={`${participants} / ${capacity > 0 ? capacity : 'Unlimited'} participants`} />
             </div>
 
             <hr className="border-slate-100" />
 
-            {isJoined ? (
+            {myEvents.some(e => e.id === id) ? (
                 <Button
-                    variant="ghost"
-                    className="w-full border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    variant="danger"
                     onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         handleLeave(id);

@@ -51,7 +51,6 @@ export class EventsService {
     return events.map((event) => ({
       ...event,
       participantCount: event._count.participants,
-      isJoined: event.participants?.length > 0,
       isFull: event.capacity ? event._count.participants >= event.capacity : false,
     }));
   }
@@ -82,7 +81,6 @@ export class EventsService {
     return {
       ...event,
       participantCount: event._count.participants,
-      isJoined: event.participants?.length > 0,
       isFull: event.capacity ? event._count.participants >= event.capacity : false,
     };
   }

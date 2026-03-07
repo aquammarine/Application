@@ -2,7 +2,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface InfoItemProps {
-    icon: LucideIcon;
+    icon?: LucideIcon;
     text: string;
     className?: string;
 }
@@ -10,7 +10,7 @@ export interface InfoItemProps {
 const InfoItem: React.FC<InfoItemProps> = ({ icon: Icon, text, className = "" }) => {
     return (
         <div className={`flex items-center gap-2 text-slate-500 font-medium text-sm ${className}`}>
-            <Icon size={16} className="text-slate-400" />
+            {Icon && <Icon size={16} className="text-slate-400" />}
             <span>{text}</span>
         </div>
     );

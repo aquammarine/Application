@@ -77,6 +77,12 @@ export class AuthController {
 
         await this.authService.logout(user.id);
 
+        res.clearCookie('access_token', {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+        });
+
         res.clearCookie('refresh_token', {
             httpOnly: true,
             secure: false,

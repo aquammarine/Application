@@ -3,6 +3,7 @@ import React from 'react';
 export interface HeaderProps extends React.HTMLAttributes<HTMLDivElement> {
     title: string;
     subtitle?: string;
+    h1ClassName?: string;
     variant?: "sm" | "md" | "lg";
 }
 
@@ -26,11 +27,12 @@ const Header: React.FC<HeaderProps> = ({
     subtitle,
     variant = "lg",
     className = "",
+    h1ClassName = "",
     ...props
 }) => {
     return (
         <div className={`${className}`.trim()} {...props}>
-            <h1 className={`${variantsConfig[variant].titleSize} font-bold text-gray-900`}>
+            <h1 className={`${variantsConfig[variant].titleSize} font-bold text-gray-900 ${h1ClassName}`}>
                 {title}
             </h1>
             {subtitle && (

@@ -31,7 +31,7 @@ const CalendarEventPill: React.FC<CalendarEventPillProps> = ({ event, onClick, v
                 <span className="text-[#6366f1] text-[11px] font-bold leading-tight">
                     {format(event.start, 'HH:mm')}
                 </span>
-                <span className="truncate w-full text-[#4f46e5]/80 text-[11px] font-bold leading-tight">
+                <span className="truncate w-full text-[#7c83f2] text-[11px] font-medium leading-tight mt-0.5">
                     {event.title}
                 </span>
             </div>

@@ -1,5 +1,5 @@
 import { Button, Card, Header, InfoItem } from "../common";
-import { ArrowLeft, CalendarDays, Clock, MapPin, User, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, MapPin, User, Users, Pencil, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEventsStore } from "../../stores/events.store";
@@ -9,9 +9,17 @@ import { useAuthStore } from "../../stores/auth.store";
 const EventDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { currentEvent, fetchEventById, myEvents, isLoading, error } = useEventsStore();
+    const { currentEvent, fetchEventById, myEvents, isLoading, error, deleteEvent } = useEventsStore();
     const { handleJoin, handleLeave, isPending } = useJoinEvent();
     const { user } = useAuthStore();
+
+    const handleDelete = async () => {
+        if (!id) return;
+        if (window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+            await deleteEvent(id);
+            navigate('/calendar');
+        }
+    };
 
     useEffect(() => {
         if (id) {
@@ -49,7 +57,7 @@ const EventDetails: React.FC = () => {
             <div className="w-full max-w-4xl">
                 <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(-1)}>Back</Button>
             </div>
-            <Card className="pl-6 flex flex-col gap-2 w-full max-w-4xl rounded-2xl overflow-hidden">
+            <Card className="pl-6 flex flex-col gap-2 w-full max-w-4xl rounded-2xl overflow-hidden border-slate-200/60">
                 <div className="flex gap-4">
                     <Header
                         title={currentEvent.title}
@@ -67,7 +75,24 @@ const EventDetails: React.FC = () => {
 
                         {
                             currentEvent.organizer?.id === user?.id ? (
-                                <p className="w-full border border-gray-200 rounded-lg p-2 text-center font-semibold text-gray-600 mt-auto bg-neutral-50 px-6 py-2">You are the organizer</p>
+                                <div className="flex flex-col gap-2 mt-auto">
+                                    <Button
+                                        variant="primary"
+                                        icon={Pencil}
+                                        className="w-full"
+                                        onClick={() => navigate(`/events/${currentEvent.id}/edit`)}
+                                    >
+                                        Edit Event
+                                    </Button>
+                                    <Button
+                                        variant="danger"
+                                        icon={Trash2}
+                                        className="w-full"
+                                        onClick={handleDelete}
+                                    >
+                                        Delete Event
+                                    </Button>
+                                </div>
                             ) : currentEvent.organizer?.id !== user?.id &&
                                 myEvents.some(e => e.id === currentEvent.id) ? (
                                 <Button

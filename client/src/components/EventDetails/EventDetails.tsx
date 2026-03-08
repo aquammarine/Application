@@ -63,7 +63,7 @@ const EventDetails: React.FC = () => {
 
             <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 flex flex-col gap-6">
-                    <Card className="flex-col p-8 gap-6 bg-white shadow-sm border-slate-200/60">
+                    <Card className="flex-col p-8 gap-6 bg-white shadow-sm">
                         <Header
                             title={currentEvent.title}
                             variant="lg"
@@ -83,7 +83,7 @@ const EventDetails: React.FC = () => {
                 </div>
 
                 <div className="lg:col-span-1 flex flex-col gap-6">
-                    <Card className="flex-col p-6 gap-6 bg-white shadow-sm border-slate-200/60 sticky top-4">
+                    <Card className="flex-col p-6 gap-6 bg-white shadow-sm sticky top-4">
                         <h2 className="text-lg font-bold text-slate-900">Event Details</h2>
 
                         <div className="flex flex-col gap-4">

@@ -25,16 +25,14 @@ const WeekDayCard: React.FC<WeekDayCardProps> = ({ day, selectedDate, events, on
     return (
         <Card
             onClick={() => onDayClick(day)}
-            className={`flex-col p-4 cursor-pointer group transition-all duration-300 min-h-[150px] ${today
-                ? 'border-[#6366f1] border-2 shadow-sm shadow-indigo-100'
-                : 'border-slate-100 hover:border-slate-200'
-                } bg-white rounded-2xl`}
+            className={`flex-col p-4 cursor-pointer group transition-all duration-300 min-h-[150px] hover:border-slate-400/60 bg-white rounded-2xl`}
+            variant={today ? "weekday" : "default"}
         >
             <div className="mb-2 shrink-0 px-1">
-                <p className="font-extrabold text-[13px] mb-1 text-slate-900">
+                <p className="font-extrabold text-sm mb-1 text-slate-900">
                     {format(day, 'EEE')}
                 </p>
-                <p className={`text-[15px] font-medium leading-none transition-colors duration-300 ${isSelected ? 'text-[#6366f1]' : 'text-slate-400'
+                <p className={`text-sm font-medium leading-none transition-colors duration-300 ${isSelected ? 'text-[#6366f1]' : 'text-slate-400'
                     } group-hover:text-indigo-600`}>
                     {format(day, 'd')}
                 </p>
@@ -51,7 +49,7 @@ const WeekDayCard: React.FC<WeekDayCardProps> = ({ day, selectedDate, events, on
                         />
                     ))
                 ) : (
-                    <InfoItem text="No events" className="text-slate-400 font-bold text-[13px] mt-1" />
+                    <InfoItem text="No events" className="text-slate-400 font-bold text-sm mt-1" />
                 )}
             </div>
         </Card>

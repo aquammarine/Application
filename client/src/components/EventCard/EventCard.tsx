@@ -30,7 +30,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, tim
     };
 
     return (
-        <Card className="group p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer border-slate-100" onClick={handleCardClick}>
+        <Card className="group p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer" onClick={handleCardClick}>
             <Header
                 title={title}
                 subtitle={description}
@@ -45,7 +45,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, title, description, date, tim
                 <InfoItem icon={Users} text={`${participants} / ${capacity > 0 ? capacity : 'Unlimited'} participants`} />
             </div>
 
-            <hr className="border-slate-100" />
+            <hr className="border-slate-200/60" />
 
             {isOrganizer ? (
                 <Button

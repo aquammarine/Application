@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import type { User } from '@prisma/client';
 
 @ApiTags('events')
@@ -24,8 +24,10 @@ export class EventsController {
   @Get('public')
   @ApiOperation({ summary: 'List all public events' })
   @ApiResponse({ status: 200, description: 'Return all public events.' })
-  async findAllPublic(@CurrentUser() user?: User) {
-    return await this.eventsService.findAllPublic(user?.id);
+  @ApiQuery({ name: 'tags', required: false, description: 'Comma-separated tag IDs' })
+  async findAllPublic(@CurrentUser() user?: User, @Query('tags') tagsParam?: string) {
+    const tagIds = tagsParam ? tagsParam.split(',').filter(Boolean) : undefined;
+    return await this.eventsService.findAllPublic(user?.id, tagIds);
   }
 
   @Get('my')

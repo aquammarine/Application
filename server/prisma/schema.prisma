@@ -27,6 +27,7 @@ model Event {
   location     String
   capacity     Int?
   isPublic     Boolean       @default(true)
+  tags         EventTag[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   organizerId  String
@@ -42,4 +43,24 @@ model Participant {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
+}
+
+model Tag {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  nameLower String     @unique
+  colorHex  String?    @db.Char(7)
+  createdAt DateTime   @default(now())
+  events    EventTag[]
+}
+
+model EventTag {
+  eventId  String
+  tagId    String
+  position Int    @default(1)
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+  @@index([tagId])
 }

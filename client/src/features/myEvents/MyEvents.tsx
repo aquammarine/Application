@@ -19,13 +19,13 @@ import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Button } from '../../components/common/Button';
-import { WeekDayCard } from '../../components/WeekDayCard/WeekDayCard';
+import { WeekDayCard } from '../../components/calendar/WeekDayCard/WeekDayCard';
 import '../../styles/calendar.css';
 import { useEventsStore } from '../../stores/events.store';
 import { Header } from '../../components/common';
-import { CalendarToolbar } from '../../components/CalendarToolbar';
-import { MyEventsEmpty } from '../../components/MyEventsEmpty';
-import { CalendarEventPill } from '../../components/CalendarEventPill';
+import { CalendarToolbar } from '../../components/calendar/CalendarToolbar';
+import { MyEventsEmpty } from '../../components/calendar/MyEventsEmpty';
+import { CalendarEventPill } from '../../components/calendar/CalendarEventPill';
 import { useAuthStore } from '../../stores/auth.store';
 import type { Event } from '../../types/events.type';
 
@@ -43,11 +43,9 @@ const localizer = dateFnsLocalizer({
 });
 
 function getEventColor(event: Event, isOrganizer: boolean): string {
-    // First tag's color (position 1/index 0)
     if (event.tags && event.tags.length > 0 && event.tags[0].tag.colorHex) {
         return event.tags[0].tag.colorHex;
     }
-    // Fallback: blue for organized, purple for attending
     return isOrganizer ? '#1D4ED8' : '#7C3AED';
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Card, Error, FormField, Header, InfoItem, RadioGroup, TextArea } from '../common';
-import { TagsMultiSelect } from '../TagsMultiSelect/TagsMultiSelect';
-import type { EventFormFieldValues } from '../../types/events.type';
+import { Button, Card, Error, FormField, Header, InfoItem, RadioGroup, TextArea } from '../../common';
+import { TagsMultiSelect } from '../../tags/TagsMultiSelect/TagsMultiSelect';
+import type { EventFormFieldValues } from '../../../types/events.type';
 import { ArrowLeft } from 'lucide-react';
 
 interface EventFormProps {
@@ -133,8 +133,8 @@ const EventForm: React.FC<EventFormProps> = ({
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="-mt-4 flex flex-col gap-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Tags <span className="text-gray-400 font-normal">(optional, max 5)</span>
                     </label>
                     <TagsMultiSelect

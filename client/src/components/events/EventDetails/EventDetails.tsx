@@ -1,12 +1,12 @@
-import { Button, Card, Header, InfoItem, Modal } from "../common";
+import { Button, Card, Header, InfoItem, Modal } from "../../common";
 import { ArrowLeft, CalendarDays, Clock, MapPin, User, Users, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useEventsStore } from "../../stores/events.store";
-import { useJoinEvent } from "../../hooks/useJoinEvent";
-import { useAuthStore } from "../../stores/auth.store";
+import { useEventsStore } from "../../../stores/events.store";
+import { useJoinEvent } from "../../../hooks/useJoinEvent";
+import { useAuthStore } from "../../../stores/auth.store";
 import { ParticipantsList } from "../ParticipantsList";
-import { EventTagsSection } from "./EventTagsSection";
+import { EventTagsSection } from "../EventTagsSection/EventTagsSection";
 
 const EventDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -48,7 +48,6 @@ const EventDetails: React.FC = () => {
     const participantsCount = currentEvent._count?.participants || 0;
     const isParticipant = currentEvent.participants?.some(p => p.user?.id === user?.id);
     const participants = currentEvent.participants || [];
-    console.log('participants:', participants);
 
     const confirmDelete = async () => {
         if (!id) return;
@@ -77,7 +76,6 @@ const EventDetails: React.FC = () => {
                             {currentEvent.description}
                         </div>
 
-                        {/* Tags Section */}
                         <EventTagsSection tags={currentEvent.tags} />
 
                         <ParticipantsList

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TagChip } from "../TagChip/TagChip";
-import type { EventTag } from "../../types/tag";
+import { TagChip } from "../../tags/TagChip/TagChip";
+import type { EventTag } from "../../../types/tag";
 
 interface EventTagsSectionProps {
     tags?: EventTag[];

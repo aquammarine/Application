@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import type { Tag } from '../../types/tag';
+import type { Tag } from '../../../types/tag';
 
 interface TagChipProps {
   tag: Tag;

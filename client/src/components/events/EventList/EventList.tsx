@@ -1,23 +1,20 @@
 import { EventCard } from "../EventCard";
-import { useEventsStore } from "../../stores/events.store";
-import { useEffect } from "react";
+import { useEventsStore } from "../../../stores/events.store";
+import { useAuthStore } from "../../../stores/auth.store";
 
 interface EventListProps {
     searchQuery?: string;
-    activeTags?: string[]; // ADDED
-    onTagClick?: (tagId: string) => void; // ADDED
+    activeTags?: string[];
+    onTagClick?: (tagId: string) => void;
 }
 
 const EventList: React.FC<EventListProps> = ({ searchQuery = "", activeTags = [], onTagClick }) => {
-    const { events, fetchPublicEvents, isLoading } = useEventsStore();
-
-    useEffect(() => {
-        fetchPublicEvents();
-    }, [fetchPublicEvents]);
+    const { events, isLoading } = useEventsStore();
+    const { user } = useAuthStore();
 
     const filteredEvents = events.filter(event => {
         const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesTags = activeTags.length === 0 || 
+        const matchesTags = activeTags.length === 0 ||
             activeTags.every(tagId => event.tags?.some(et => et.tagId === tagId));
         return matchesSearch && matchesTags;
     });
@@ -59,7 +56,7 @@ const EventList: React.FC<EventListProps> = ({ searchQuery = "", activeTags = []
     });
 
     return (
-        <div className="mt-8 flex flex-wrap gap-4">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 
             {eventsWithFormattedDate.map((event) => (
                 <EventCard
@@ -73,8 +70,9 @@ const EventList: React.FC<EventListProps> = ({ searchQuery = "", activeTags = []
                     participants={event._count?.participants || 0}
                     capacity={event.capacity || 0}
                     organizerId={event.organizerId}
-                    tags={event.tags} // ADDED
-                    onTagClick={onTagClick} // ADDED
+                    isParticipant={event.participants?.some(p => p.user?.id === user?.id)}
+                    tags={event.tags}
+                    onTagClick={onTagClick}
                 />
             ))}
         </div>

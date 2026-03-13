@@ -2,18 +2,18 @@ import { Loader2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEditEventForm } from "../../hooks/useEditEventForm";
 import { useEventsStore } from "../../stores/events.store";
-import { EventForm } from "../../components/EventForm";
+import { EventForm } from "../../components/events/EventForm";
 
 const EditEvent: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { error: storeError } = useEventsStore();
-    const { 
-        form, 
-        setForm, 
-        fieldErrors, 
-        handleSubmit, 
-        isSubmitting, 
+    const {
+        form,
+        setForm,
+        fieldErrors,
+        handleSubmit,
+        isSubmitting,
         isLoading,
         selectedTagIds,
         setSelectedTagIds,

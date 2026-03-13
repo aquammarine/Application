@@ -4,7 +4,8 @@ import { useTagsStore } from '../stores/tagsStore';
 export const useTagsSelection = (
   value: string[],
   onChange: (ids: string[]) => void,
-  disabled?: boolean
+  disabled?: boolean,
+  max: number = 5
 ) => {
   const { tags, isLoading, fetchTags, getTagById } = useTagsStore();
 
@@ -17,7 +18,7 @@ export const useTagsSelection = (
     [value, getTagById]
   );
 
-  const isMaxReached = value.length >= 5;
+  const isMaxReached = max > 0 && value.length >= max;
 
   const toggleTag = (tagId: string) => {
     if (disabled) return;

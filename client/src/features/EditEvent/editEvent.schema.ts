@@ -42,8 +42,7 @@ export const editEventSchema = z.object({
         });
     }
 
-    // Note: We're not enforcing the "future only" check for Edits 
-    // to allow editing ongoing or past events if needed by the UI.
+    
 });
 
 export type EditEventFormData = z.infer<typeof editEventSchema>;

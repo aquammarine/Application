@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useCreateEventForm } from "../../hooks/useCreateEventForm";
 import { useEventsStore } from "../../stores/events.store";
-import { EventForm } from "../../components/EventForm";
+import { EventForm } from "../../components/events/EventForm";
 
 const CreateEvent: React.FC = () => {
     const navigate = useNavigate();

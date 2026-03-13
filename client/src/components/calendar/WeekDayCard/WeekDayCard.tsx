@@ -1,7 +1,7 @@
 import React from 'react';
 import { format, isSameDay, isToday } from 'date-fns';
-import { Card } from '../common/Card';
-import { InfoItem } from '../common/InfoItem';
+import { Card } from '../../common/Card';
+import { InfoItem } from '../../common/InfoItem';
 import { CalendarEventPill } from '../CalendarEventPill';
 
 interface WeekDayCardEvent {

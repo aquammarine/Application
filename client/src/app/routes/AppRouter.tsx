@@ -3,7 +3,7 @@ import { Login } from '../../features/Login';
 import { Register } from '../../features/Register';
 import { MainLayout } from '../../components/layouts';
 import { Events } from '../../features/Events';
-import { EventDetails } from '../../components/EventDetails';
+import { EventDetails } from '../../components/events/EventDetails';
 import ProtectedRoute from './ProtectedRoute';
 import { MyEvents } from '../../features/myEvents';
 import { CreateEvent } from '../../features/CreateEvent';

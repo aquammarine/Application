@@ -1,6 +1,6 @@
 import React from 'react';
-import { TagChip } from '../TagChip/TagChip';
-import type { EventTag } from '../../types/tag';
+import { TagChip } from '../../tags/TagChip/TagChip';
+import type { EventTag } from '../../../types/tag';
 
 interface EventTagListProps {
     tags?: EventTag[];
@@ -9,9 +9,9 @@ interface EventTagListProps {
     className?: string;
 }
 
-const EventTagList: React.FC<EventTagListProps> = ({ 
-    tags, 
-    onTagClick, 
+const EventTagList: React.FC<EventTagListProps> = ({
+    tags,
+    onTagClick,
     maxDisplay = 3,
     className = "flex flex-wrap gap-1 mt-2"
 }) => {

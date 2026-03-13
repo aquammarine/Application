@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Mail, Lock, User } from "lucide-react";
 import { Button, Card, FormField } from "../../components/common/index";
-import { AuthRedirect } from "../../components/AuthRedirect/index";
+import { AuthRedirect } from "../../components/auth/AuthRedirect/index";
 import { useAuthStore } from "../../stores/auth.store";
 import { useNavigate } from "react-router-dom";
 

@@ -1,11 +1,11 @@
-import { Card, Header, InfoItem, Button } from "../common";
+import { Card, Header, InfoItem, Button } from "../../common";
 import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
-import { useJoinEvent } from "../../hooks/useJoinEvent";
-import { useAuthStore } from "../../stores/auth.store";
+import { useJoinEvent } from "../../../hooks/useJoinEvent";
+import { useAuthStore } from "../../../stores/auth.store";
 import { useNavigate } from "react-router-dom";
-import { useEventsStore } from "../../stores/events.store";
-import { EventTagList } from "./EventTagList";
-import type { EventTag } from "../../types/tag";
+import { useEventsStore } from "../../../stores/events.store";
+import { EventTagList } from "../EventTagList/EventTagList";
+import type { EventTag } from "../../../types/tag";
 
 interface EventCardProps {
     id: string;
@@ -17,6 +17,7 @@ interface EventCardProps {
     participants: number;
     capacity: number;
     organizerId: string;
+    isParticipant?: boolean;
     tags?: EventTag[];
     onTagClick?: (tagId: string) => void;
 }
@@ -31,6 +32,7 @@ const EventCard: React.FC<EventCardProps> = ({
     participants,
     capacity,
     organizerId,
+    isParticipant: isParticipantProp,
     tags,
     onTagClick
 }) => {
@@ -40,13 +42,14 @@ const EventCard: React.FC<EventCardProps> = ({
     const navigate = useNavigate();
 
     const isOrganizer = user?.id === organizerId;
+    const isParticipant = isParticipantProp || myEvents.some(e => e.id === id);
 
     const handleCardClick = () => {
         navigate(`/events/${id}`);
     };
 
     return (
-        <Card className="group p-6 flex flex-col gap-2 w-full max-w-md rounded-2xl cursor-pointer" onClick={handleCardClick}>
+        <Card className="group p-6 flex flex-col gap-2 w-full rounded-2xl cursor-pointer" onClick={handleCardClick}>
             <Header
                 title={title}
                 subtitle={description}
@@ -76,9 +79,10 @@ const EventCard: React.FC<EventCardProps> = ({
                 >
                     Manage Event
                 </Button>
-            ) : myEvents.some(e => e.id === id) ? (
+            ) : isParticipant ? (
                 <Button
                     variant="danger"
+                    className="w-full"
                     onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         handleLeave(id);

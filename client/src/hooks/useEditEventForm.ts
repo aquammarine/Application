@@ -2,25 +2,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEventsStore } from '../stores/events.store';
 import { editEventSchema } from '../features/EditEvent/editEvent.schema';
+import { tagsApi } from '../api/tags';
+import type { EventFormFieldValues } from '../types/events.type';
 import type { ZodError } from 'zod';
 
-interface EditEventForm {
-    title: string;
-    description: string;
-    date: string;
-    time: string;
-    location: string;
-    capacity: string;
-    isPublic: boolean;
-}
-
-type FormFieldKeys = keyof EditEventForm;
+type FormFieldKeys = keyof EventFormFieldValues;
 
 export const useEditEventForm = (id: string | undefined) => {
     const { currentEvent, fetchEventById, updateEvent } = useEventsStore();
     const navigate = useNavigate();
 
-    const [form, setForm] = useState<EditEventForm>({
+    const [form, setForm] = useState<EventFormFieldValues>({
         title: '',
         description: '',
         date: '',
@@ -33,6 +25,9 @@ export const useEditEventForm = (id: string | undefined) => {
     const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormFieldKeys, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+    const [tagsError, setTagsError] = useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -56,6 +51,10 @@ export const useEditEventForm = (id: string | undefined) => {
                 capacity: currentEvent.capacity?.toString() || '',
                 isPublic: currentEvent.isPublic,
             });
+
+            if (currentEvent.tags) {
+                setSelectedTagIds(currentEvent.tags.map((et: { tagId: string }) => et.tagId));
+            }
         }
     }, [currentEvent, id]);
 
@@ -63,12 +62,11 @@ export const useEditEventForm = (id: string | undefined) => {
         e.preventDefault();
         if (!id) return;
         setFieldErrors({});
+        setTagsError(null);
 
         try {
             const validated = editEventSchema.parse(form);
-
             const dateTime = new Date(`${validated.date}T${validated.time}`).toISOString();
-
             const capacityValue = validated.capacity === 0 || validated.capacity === undefined
                 ? null
                 : validated.capacity;
@@ -84,7 +82,18 @@ export const useEditEventForm = (id: string | undefined) => {
                 isPublic: validated.isPublic,
             });
 
-            navigate('/events');
+            try {
+                await tagsApi.updateEventTags(id, selectedTagIds);
+            } catch (tagErr) {
+                console.error("Failed to update tags:", tagErr);
+                setTagsError("Changes saved but tags could not be updated.");
+                setTimeout(() => {
+                    navigate('/events/' + id);
+                }, 3000);
+                return;
+            }
+
+            navigate('/events/' + id);
         } catch (err: any) {
             if (err?.name === 'ZodError') {
                 const zodError = err as ZodError;
@@ -110,5 +119,8 @@ export const useEditEventForm = (id: string | undefined) => {
         handleSubmit,
         isSubmitting,
         isLoading,
+        selectedTagIds,
+        setSelectedTagIds,
+        tagsError,
     };
 };

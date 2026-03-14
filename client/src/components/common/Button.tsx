@@ -4,7 +4,7 @@ import type { LucideIcon } from 'lucide-react';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children?: React.ReactNode;
     onClick?: (e: React.MouseEvent) => void;
-    variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'danger';
+    variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'danger' | 'chip';
     icon?: LucideIcon;
 }
 
@@ -25,7 +25,8 @@ const Button: React.FC<ButtonProps> = ({
         secondary: "bg-[#17A148] hover:bg-[#17A148]/80 text-white",
         ghost: "bg-opacity-0 hover:text-gray-900 text-gray-700",
         disabled: "bg-[#17A148]/50 text-white",
-        danger: "bg-red-700 text-white hover:bg-red-600"
+        danger: "bg-red-700 text-white hover:bg-red-600",
+        chip: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 rounded-full text-sm",
     };
 
     return (

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { eventsApi } from '../api/eventsApi';
+import { useAuthStore } from './auth.store';
 import type { CreateEventDto, Event, UpdateEventDto } from '../types/events.type';
 
 interface EventsState {
@@ -10,6 +11,7 @@ interface EventsState {
     error: string | null;
 
     fetchPublicEvents: () => Promise<void>;
+    fetchAllEvents: (tagIds?: string[]) => Promise<void>;
     fetchMyEvents: () => Promise<void>;
     fetchEventById: (id: string) => Promise<void>;
     createEvent: (dto: CreateEventDto) => Promise<void>;
@@ -29,8 +31,26 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     fetchPublicEvents: async () => {
         set({ isLoading: true, error: null });
         try {
-            const events = await eventsApi.getAllPublic();
-            set({ events, isLoading: false });
+            const [events, myEvents] = await Promise.all([
+                eventsApi.getAllPublic(),
+                useAuthStore.getState().user ? eventsApi.getMyEvents() : Promise.resolve([])
+            ]);
+            set({ events, myEvents, isLoading: false });
+        } catch (err: any) {
+            set({ error: err.response?.data?.message || 'Failed to fetch events', isLoading: false });
+        }
+    },
+
+    fetchAllEvents: async (tagIds?: string[]) => {
+        set({ isLoading: true, error: null });
+        try {
+            const [events, myEvents] = await Promise.all([
+                tagIds && tagIds.length > 0
+                    ? eventsApi.getAll(tagIds)
+                    : eventsApi.getAllPublic(),
+                useAuthStore.getState().user ? eventsApi.getMyEvents() : Promise.resolve([])
+            ]);
+            set({ events, myEvents, isLoading: false });
         } catch (err: any) {
             set({ error: err.response?.data?.message || 'Failed to fetch events', isLoading: false });
         }
@@ -97,9 +117,15 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     joinEvent: async (id: string) => {
         try {
             await eventsApi.join(id);
-            await get().fetchEventById(id);
-            await get().fetchMyEvents();
-            await get().fetchPublicEvents();
+            const [updatedEvent, myEvents] = await Promise.all([
+                eventsApi.getById(id),
+                eventsApi.getMyEvents()
+            ]);
+            set((state) => ({
+                events: state.events.map(e => e.id === id ? updatedEvent : e),
+                myEvents,
+                currentEvent: state.currentEvent?.id === id ? updatedEvent : state.currentEvent
+            }));
         } catch (err: any) {
             set({ error: err.response?.data?.message || 'Failed to join event' });
         }
@@ -108,9 +134,15 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     leaveEvent: async (id: string) => {
         try {
             await eventsApi.leave(id);
-            await get().fetchEventById(id);
-            await get().fetchMyEvents();
-            await get().fetchPublicEvents();
+            const [updatedEvent, myEvents] = await Promise.all([
+                eventsApi.getById(id),
+                eventsApi.getMyEvents()
+            ]);
+            set((state) => ({
+                events: state.events.map(e => e.id === id ? updatedEvent : e),
+                myEvents,
+                currentEvent: state.currentEvent?.id === id ? updatedEvent : state.currentEvent
+            }));
         } catch (err: any) {
             set({ error: err.response?.data?.message || 'Failed to leave event' });
         }

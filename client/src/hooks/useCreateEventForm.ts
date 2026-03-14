@@ -2,25 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEventsStore } from '../stores/events.store';
 import { createEventSchema } from '../features/CreateEvent/createEvent.schema';
+import { eventsApi } from '../api/eventsApi';
+import { tagsApi } from '../api/tags';
+import type { EventFormFieldValues } from '../types/events.type';
 import type { ZodError } from 'zod';
 
-interface CreateEventForm {
-    title: string;
-    description: string;
-    date: string;
-    time: string;
-    location: string;
-    capacity: string;
-    isPublic: boolean;
-}
-
-type FormFieldKeys = keyof CreateEventForm;
+type FormFieldKeys = keyof EventFormFieldValues;
 
 export const useCreateEventForm = () => {
-    const { createEvent } = useEventsStore();
+    const { fetchPublicEvents } = useEventsStore();
     const navigate = useNavigate();
 
-    const [form, setForm] = useState<CreateEventForm>({
+    const [form, setForm] = useState<EventFormFieldValues>({
         title: '',
         description: '',
         date: '',
@@ -33,22 +26,24 @@ export const useCreateEventForm = () => {
     const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormFieldKeys, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+    const [tagsError, setTagsError] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFieldErrors({});
+        setTagsError(null);
 
         try {
             const validated = createEventSchema.parse(form);
-
             const dateTime = new Date(`${validated.date}T${validated.time}`).toISOString();
-
             const capacityValue = validated.capacity === 0 || validated.capacity === undefined
                 ? null
                 : validated.capacity;
 
             setIsSubmitting(true);
 
-            await createEvent({
+            const newEvent = await eventsApi.create({
                 title: validated.title,
                 description: validated.description,
                 dateTime,
@@ -57,7 +52,22 @@ export const useCreateEventForm = () => {
                 isPublic: validated.isPublic,
             });
 
-            navigate('/events');
+            if (selectedTagIds.length > 0) {
+                try {
+                    await tagsApi.updateEventTags(newEvent.id, selectedTagIds);
+                } catch (tagErr) {
+                    console.error("Failed to update tags:", tagErr);
+                    setTagsError("Event created but tags could not be saved. You can edit tags later.");
+                    await fetchPublicEvents();
+                    setTimeout(() => {
+                        navigate('/events/' + newEvent.id);
+                    }, 3000);
+                    return;
+                }
+            }
+
+            await fetchPublicEvents();
+            navigate('/events/' + newEvent.id);
         } catch (err: any) {
             if (err?.name === 'ZodError') {
                 const zodError = err as ZodError;
@@ -80,7 +90,12 @@ export const useCreateEventForm = () => {
         form,
         setForm,
         fieldErrors,
+        setFieldErrors,
         handleSubmit,
         isSubmitting,
+        setIsSubmitting,
+        selectedTagIds,
+        setSelectedTagIds,
+        tagsError,
     };
 };

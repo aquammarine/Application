@@ -34,9 +34,14 @@ export class EventsService {
     });
   }
 
-  async findAllPublic(userId?: string) {
+  async findAllPublic(userId?: string, tagIds?: string[]) {
     const events = await this.prisma.event.findMany({
-      where: { isPublic: true },
+      where: {
+        isPublic: true,
+        ...(tagIds && tagIds.length > 0
+          ? { tags: { some: { tagId: { in: tagIds } } } }
+          : {}),
+      },
       include: {
         _count: {
           select: { participants: true },
@@ -52,6 +57,10 @@ export class EventsService {
             email: true,
           },
         },
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
+        },
       },
       orderBy: { dateTime: 'asc' },
     });
@@ -60,6 +69,7 @@ export class EventsService {
       ...event,
       participantCount: event._count.participants,
       isFull: event.capacity ? event._count.participants >= event.capacity : false,
+      firstTagColor: event.tags[0]?.tag?.colorHex ?? null,
     }));
   }
 
@@ -89,6 +99,10 @@ export class EventsService {
             email: true,
           },
         },
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
+        },
       },
     });
 
@@ -107,6 +121,10 @@ export class EventsService {
       include: {
         _count: {
           select: { participants: true },
+        },
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
         },
       },
     });
@@ -147,6 +165,12 @@ export class EventsService {
         ...updateEventDto,
         dateTime: updateEventDto.dateTime ? new Date(updateEventDto.dateTime) : undefined,
       },
+      include: {
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
+        },
+      },
     });
   }
 
@@ -156,7 +180,15 @@ export class EventsService {
       throw new ForbiddenException('Not authorized to delete this event');
     }
 
-    return this.prisma.event.delete({ where: { id } });
+    return this.prisma.event.delete({
+      where: { id },
+      include: {
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
   }
 
   async findMyEvents(userId: string) {
@@ -181,6 +213,10 @@ export class EventsService {
             firstName: true,
             lastName: true,
           },
+        },
+        tags: {
+          include: { tag: true },
+          orderBy: { position: 'asc' },
         },
       },
       orderBy: { dateTime: 'asc' },

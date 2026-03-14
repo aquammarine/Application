@@ -12,6 +12,12 @@ export const eventsApi = {
         return data;
     },
 
+    getAll: async (tagIds?: string[]): Promise<Event[]> => {
+        const tagsParam = tagIds?.length ? `?tags=${tagIds.join(',')}` : '';
+        const { data } = await api.get<Event[]>(`/events${tagsParam}`);
+        return data;
+    },
+
     getMyEvents: async (): Promise<Event[]> => {
         const { data } = await api.get<Event[]>('/events/my');
         return data;

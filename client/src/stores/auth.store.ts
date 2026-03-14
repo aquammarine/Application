@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import api from "../api/auth-client";
+import useAssistantStore from "./assistantStore";
 
 import type {
     User,
@@ -76,6 +77,8 @@ export const useAuthStore = create<AuthState>()(
                     await api.post('/auth/logout')
                 } catch (error) {
                 }
+
+                useAssistantStore.getState().clearMessages();
 
                 set({
                     user: null,

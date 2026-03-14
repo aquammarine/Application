@@ -1,0 +1,1 @@
+export { TagsMultiSelect } from './TagsMultiSelect';

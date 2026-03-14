@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../modules/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ONE_DAY, ONE_WEEK } from 'src/common/constants/time.constants';
 
 @Injectable()
 export class SnapshotBuilder {
@@ -16,8 +17,12 @@ export class SnapshotBuilder {
         return JSON.stringify({ error: 'User not found' });
       }
 
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
       const events = await this.prisma.event.findMany({
         where: {
+          dateTime: { gte: thirtyDaysAgo },
           OR: [
             { organizerId: userId },
             { participants: { some: { userId } } },
@@ -47,18 +52,36 @@ export class SnapshotBuilder {
       const sunday = new Date(monday);
       sunday.setUTCDate(monday.getUTCDate() + 6);
 
+      const lastMonday = new Date(monday.getTime() - ONE_WEEK);
+      const lastSunday = new Date(monday.getTime() - ONE_DAY);
+
+      // UTC midnight boundaries — used to label each event by period
+      const mondayStart = new Date(monday); mondayStart.setUTCHours(0, 0, 0, 0);
+      const sundayEnd = new Date(sunday); sundayEnd.setUTCHours(23, 59, 59, 999);
+      const lastMondayStart = new Date(lastMonday); lastMondayStart.setUTCHours(0, 0, 0, 0);
+      const lastSundayEnd = new Date(lastSunday); lastSundayEnd.setUTCHours(23, 59, 59, 999);
+
+      const getPeriod = (dt: Date): string => {
+        if (dt >= lastMondayStart && dt <= lastSundayEnd) return 'last-week';
+        if (dt >= mondayStart && dt <= sundayEnd) return 'this-week';
+        if (dt > sundayEnd) return 'upcoming';
+        return 'past';
+      };
+
       const snapshot = {
         generatedAt: now.toISOString(),
         user: { id: user.id, name: `${user.firstName} ${user.lastName}` },
         currentDateTime: fmt.format(now),
         thisWeek: fmtDate(monday) + ' to ' + fmtDate(sunday),
-        thisWeekend: fmtDate(new Date(monday.getTime() + 5 * 86400000)) + ' - ' + fmtDate(sunday),
+        lastWeek: fmtDate(lastMonday) + ' to ' + fmtDate(lastSunday),
+        thisWeekend: fmtDate(new Date(monday.getTime() + 5 * ONE_DAY)) + ' - ' + fmtDate(sunday),
         events: events.map((e) => {
           const isOrganizer = e.organizerId === userId;
           return {
             id: e.id,
             title: e.title,
             dateTime: fmt.format(new Date(e.dateTime)),
+            period: getPeriod(new Date(e.dateTime)),
             location: e.location,
             isPublic: e.isPublic,
             isOrganizer,

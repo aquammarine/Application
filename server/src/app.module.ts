@@ -6,7 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { TagsModule } from './modules/tags/tags.module';
-import { AssistantModule } from './assistant/assistant.module';
+import { AssistantModule } from './modules/assistant/assistant.module';
 
 @Module({
   imports: [

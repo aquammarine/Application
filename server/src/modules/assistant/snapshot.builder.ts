@@ -20,22 +20,44 @@ export class SnapshotBuilder {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const events = await this.prisma.event.findMany({
-        where: {
-          dateTime: { gte: thirtyDaysAgo },
-          OR: [
-            { organizerId: userId },
-            { participants: { some: { userId } } },
-          ],
-        },
-        include: {
-          organizer: { select: { id: true, firstName: true, lastName: true } },
-          participants: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
-          tags: { include: { tag: true }, orderBy: { position: 'asc' } },
-        },
-        orderBy: { dateTime: 'asc' },
-        take: 50,
-      });
+      const [userEvents, publicEvents, tags] = await Promise.all([
+        this.prisma.event.findMany({
+          where: {
+            dateTime: { gte: thirtyDaysAgo },
+            OR: [
+              { organizerId: userId },
+              { participants: { some: { userId } } },
+            ],
+          },
+          include: {
+            organizer: { select: { id: true, firstName: true, lastName: true } },
+            participants: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
+            tags: { include: { tag: true }, orderBy: { position: 'asc' } },
+          },
+          orderBy: { dateTime: 'asc' },
+          take: 30,
+        }),
+
+        this.prisma.event.findMany({
+          where: {
+            isPublic: true,
+            dateTime: { gte: new Date() },
+            organizerId: { not: userId },
+            participants: { none: { userId } },
+          },
+          include: {
+            tags: { include: { tag: true }, orderBy: { position: 'asc' } },
+            _count: { select: { participants: true } },
+          },
+          orderBy: { dateTime: 'asc' },
+          take: 20,
+        }),
+
+        this.prisma.tag.findMany({
+          select: { name: true, colorHex: true },
+          orderBy: { name: 'asc' },
+        }),
+      ]);
 
       const now = new Date();
       const fmt = new Intl.DateTimeFormat('en-US', {
@@ -55,7 +77,6 @@ export class SnapshotBuilder {
       const lastMonday = new Date(monday.getTime() - ONE_WEEK);
       const lastSunday = new Date(monday.getTime() - ONE_DAY);
 
-      // UTC midnight boundaries — used to label each event by period
       const mondayStart = new Date(monday); mondayStart.setUTCHours(0, 0, 0, 0);
       const sundayEnd = new Date(sunday); sundayEnd.setUTCHours(23, 59, 59, 999);
       const lastMondayStart = new Date(lastMonday); lastMondayStart.setUTCHours(0, 0, 0, 0);
@@ -75,7 +96,8 @@ export class SnapshotBuilder {
         thisWeek: fmtDate(monday) + ' to ' + fmtDate(sunday),
         lastWeek: fmtDate(lastMonday) + ' to ' + fmtDate(lastSunday),
         thisWeekend: fmtDate(new Date(monday.getTime() + 5 * ONE_DAY)) + ' - ' + fmtDate(sunday),
-        events: events.map((e) => {
+
+        myEvents: userEvents.map((e) => {
           const isOrganizer = e.organizerId === userId;
           return {
             id: e.id,
@@ -93,6 +115,18 @@ export class SnapshotBuilder {
             }),
           };
         }),
+
+        publicEvents: publicEvents.map((e) => ({
+          id: e.id,
+          title: e.title,
+          dateTime: fmt.format(new Date(e.dateTime)),
+          period: getPeriod(new Date(e.dateTime)),
+          location: e.location,
+          tags: e.tags.map((et) => et.tag.name),
+          attendeeCount: e._count.participants,
+        })),
+
+        availableTags: tags.map((t) => t.name),
       };
 
       return JSON.stringify(snapshot);
@@ -101,3 +135,4 @@ export class SnapshotBuilder {
     }
   }
 }
+

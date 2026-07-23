@@ -72,9 +72,10 @@ export class AuthService {
     }
 
     async logout(userId: string) {
-        
+        // TO BE IMPLEMENTED
     }
 
     async refreshTokens(rt: string) {
+        //TO BE IMPLEMENTED
     }
 }

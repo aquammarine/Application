@@ -2,11 +2,11 @@ import { Controller, Post, Body, UseGuards, Req, HttpCode, HttpStatus, Res, Unau
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RtAuthGuard } from '../../common/guards/rt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RtAuthGuard } from '../common/guards/rt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import * as express from 'express';
-import { ONE_MINUTE, ONE_WEEK } from '../../common/constants/time.constants';
+import { ONE_MINUTE, ONE_WEEK } from '../common/constants/time.constants';
 
 @ApiTags('auth')
 @Controller('auth')

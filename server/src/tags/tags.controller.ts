@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { UpdateEventTagsDto } from './dto/update-event-tags.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('tags')

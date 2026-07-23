@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EventsModule } from './modules/events/events.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { EventsModule } from './events/events.module';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './modules/users/users.module';
-import { TagsModule } from './modules/tags/tags.module';
-import { AssistantModule } from './modules/assistant/assistant.module';
+import { UsersModule } from './users/users.module';
+import { TagsModule } from './tags/tags.module';
+import { AssistantModule } from './assistant/assistant.module';
+import { RedisModule } from './infra/cache/redis/redis.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { AssistantModule } from './modules/assistant/assistant.module';
     AuthModule,
     UsersModule,
     TagsModule,
-    AssistantModule
+    AssistantModule,
+    RedisModule
   ],
   controllers: [AppController],
   providers: [AppService],

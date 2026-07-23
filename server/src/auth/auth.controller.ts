@@ -21,6 +21,8 @@ import type { Request, Response } from 'express';
 import { ONE_MONTH } from '../common/constants/time.constants';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RegisterResponseDto } from './dto/register-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -34,7 +36,7 @@ export class AuthController {
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<RegisterResponseDto> {
     const { user, tokens } = await this.authService.register(dto);
 
     res.cookie('refresh_token', tokens.refreshToken, {
@@ -58,7 +60,7 @@ export class AuthController {
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<LoginResponseDto> {
     const { user, tokens } = await this.authService.login(dto);
 
     res.cookie('refresh_token', tokens.refreshToken, {
@@ -80,7 +82,10 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({ status: 204, description: 'User successfully logged out.' })
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
     const refreshToken = req.cookies['refresh_token'];
 
     await this.authService.logout(refreshToken);
@@ -101,7 +106,7 @@ export class AuthController {
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<{ accessToken: string }> {
     const staleRefreshToken = req.cookies['refresh_token'];
 
     const { accessToken, refreshToken } =

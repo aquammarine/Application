@@ -17,8 +17,8 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         const status = HttpStatus.CONFLICT;
         response.status(status).json({
           statusCode: status,
-          path,
           timestamp,
+          path,
           message: `Unique constraint failed on the fields: ${(exception.meta?.target as string[] | undefined)?.join(', ')}`,
         });
         break;

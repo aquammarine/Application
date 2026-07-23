@@ -14,7 +14,6 @@ model User {
   firstName       String
   lastName        String
   password        String
-  refreshToken    String?
   organizedEvents Event[]       @relation("OrganizedEvents")
   participations  Participant[]
 }

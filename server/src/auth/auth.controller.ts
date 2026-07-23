@@ -7,6 +7,7 @@ import {
   Res,
   HttpCode,
   HttpStatus,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -23,7 +24,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { RefreshTokenPayload } from './types/refresh-token-payload.types';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,8 +36,8 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User successfully registered.' })
-  @ApiResponse({ status: 409, description: 'Email already exists.' })
+  @ApiResponse({ status: 201, description: 'User successfully registered.', type: RegisterResponseDto })
+  @ApiResponse({ status: 400, description: 'Validation failed, or email already in use.' })
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -56,8 +60,9 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'User successfully logged in.' })
-  @ApiResponse({ status: 401, description: 'Invalid credentials.' })
+  @ApiResponse({ status: 200, description: 'User successfully logged in.', type: LoginResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid password.' })
+  @ApiResponse({ status: 404, description: "User doesn't exist." })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -83,6 +88,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({ status: 204, description: 'User successfully logged out.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -103,11 +109,13 @@ export class AuthController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiResponse({ status: 200, description: 'Tokens successfully refreshed.' })
+  @ApiResponse({ status: 200, description: 'Tokens successfully refreshed.', type: RefreshResponseDto })
+  @ApiResponse({ status: 400, description: 'Refresh token revoked or reused.' })
+  @ApiResponse({ status: 401, description: 'Missing, invalid, or expired refresh token.' })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<RefreshResponseDto> {
     const staleRefreshToken = req.user as RefreshTokenPayload;
 
     const { accessToken, refreshToken } =
@@ -121,5 +129,16 @@ export class AuthController {
     });
 
     return { accessToken };
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({summary: "Get current user data"})
+  @ApiResponse({status: 200, description: 'User successfully fetched', type: User})
+  @ApiResponse({status: 401, description: 'Missing or invalid access token.'})
+  async getMe(@CurrentUser() user: User){
+    return user;
   }
 }

@@ -36,8 +36,15 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User successfully registered.', type: RegisterResponseDto })
-  @ApiResponse({ status: 400, description: 'Validation failed, or email already in use.' })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully registered.',
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed, or email already in use.',
+  })
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -60,7 +67,11 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'User successfully logged in.', type: LoginResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged in.',
+    type: LoginResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid password.' })
   @ApiResponse({ status: 404, description: "User doesn't exist." })
   async login(
@@ -109,9 +120,16 @@ export class AuthController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiResponse({ status: 200, description: 'Tokens successfully refreshed.', type: RefreshResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens successfully refreshed.',
+    type: RefreshResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Refresh token revoked or reused.' })
-  @ApiResponse({ status: 401, description: 'Missing, invalid, or expired refresh token.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing, invalid, or expired refresh token.',
+  })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -135,10 +153,14 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({summary: "Get current user data"})
-  @ApiResponse({status: 200, description: 'User successfully fetched', type: User})
-  @ApiResponse({status: 401, description: 'Missing or invalid access token.'})
-  async getMe(@CurrentUser() user: User){
+  @ApiOperation({ summary: 'Get current user data' })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully fetched',
+    type: User,
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  async getMe(@CurrentUser() user: User) {
     return user;
   }
 }

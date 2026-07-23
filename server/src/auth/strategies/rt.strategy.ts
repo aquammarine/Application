@@ -16,7 +16,7 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     });
   }
 
-  validate(req: Request, payload: {sub: string, email: string, jti: string}) {
+  validate(req: Request, payload: { sub: string; email: string; jti: string }) {
     const refreshToken = req.cookies?.refresh_token;
 
     if (!refreshToken) throw new ForbiddenException('Refresh token missing');

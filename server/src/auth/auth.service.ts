@@ -103,7 +103,7 @@ export class AuthService {
   }
 
   async refreshTokens(staleRefreshToken: RefreshTokenPayload) {
-    const {sub, jti, email, refreshToken} = staleRefreshToken;
+    const { sub, jti, email, refreshToken } = staleRefreshToken;
     const key = `refresh:${sub}:${jti}`;
     const storedHash = await this.redisService.get(key);
 

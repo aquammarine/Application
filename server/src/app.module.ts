@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { TagsModule } from './tags/tags.module';
 import { AssistantModule } from './assistant/assistant.module';
-import { RedisModule } from './infra/cache/redis/redis.module';
+import { RedisModule } from './infra/cache/redis.module';
 
 @Module({
   imports: [

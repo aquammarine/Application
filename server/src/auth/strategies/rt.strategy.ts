@@ -11,12 +11,12 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => req?.cookies?.refresh_token,
       ]),
-      secretOrKey: config.get<string>('JWT_REFRESH_SECRET')!,
+      secretOrKey: process.env.JWT_REFRESH_SECRET!,
       passReqToCallback: true,
     });
   }
 
-  validate(req: Request, payload: any) {
+  validate(req: Request, payload: {sub: string, email: string, jti: string}) {
     const refreshToken = req.cookies?.refresh_token;
 
     if (!refreshToken) throw new ForbiddenException('Refresh token missing');

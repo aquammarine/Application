@@ -6,26 +6,14 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly config: ConfigService,
-  ) {
-    const secret = config.get<string>('JWT_ACCESS_SECRET');
-
+  constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (req) => req?.cookies?.access_token,
-      ]),
-      ignoreExpiration: false,
-      secretOrKey: secret || 'temporary-fallback-for-debug',
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET!,
     });
   }
 
-  async validate(payload: any) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-    });
-    if (!user) throw new UnauthorizedException('User not found');
-    return user;
+  async validate(payload: {sub: string, email: string}) {
+    return {sub: payload.sub, email: payload.email};
   }
 }

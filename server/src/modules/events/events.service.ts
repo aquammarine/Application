@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../infra/database/prisma.service';
 
 @Injectable()
 export class EventsService {

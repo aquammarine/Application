@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../infra/database/prisma.service';
 import { ONE_DAY, ONE_WEEK } from 'src/common/constants/time.constants';
 
 @Injectable()

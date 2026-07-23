@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AssistantService } from './assistant.service';
 import { SnapshotBuilder } from './snapshot.builder';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../infra/database/prisma.module';
 import { AssistantController } from './assistant.controller';
 
 @Module({

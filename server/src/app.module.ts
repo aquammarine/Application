@@ -17,7 +17,7 @@ import { RedisModule } from './infra/cache/redis.module';
     UsersModule,
     TagsModule,
     AssistantModule,
-    RedisModule
+    RedisModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

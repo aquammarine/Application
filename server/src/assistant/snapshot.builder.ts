@@ -4,7 +4,7 @@ import { ONE_DAY, ONE_WEEK } from 'src/common/constants/time.constants';
 
 @Injectable()
 export class SnapshotBuilder {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async build(userId: string): Promise<string> {
     try {
@@ -30,8 +30,14 @@ export class SnapshotBuilder {
             ],
           },
           include: {
-            organizer: { select: { id: true, firstName: true, lastName: true } },
-            participants: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
+            organizer: {
+              select: { id: true, firstName: true, lastName: true },
+            },
+            participants: {
+              include: {
+                user: { select: { id: true, firstName: true, lastName: true } },
+              },
+            },
             tags: { include: { tag: true }, orderBy: { position: 'asc' } },
           },
           orderBy: { dateTime: 'asc' },
@@ -61,12 +67,22 @@ export class SnapshotBuilder {
 
       const now = new Date();
       const fmt = new Intl.DateTimeFormat('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
       });
-      const fmtDate = (d: Date) => new Intl.DateTimeFormat('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
-      }).format(d);
+      const fmtDate = (d: Date) =>
+        new Intl.DateTimeFormat('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          timeZone: 'UTC',
+        }).format(d);
 
       const dayOfWeek = now.getUTCDay();
       const monday = new Date(now);
@@ -77,10 +93,14 @@ export class SnapshotBuilder {
       const lastMonday = new Date(monday.getTime() - ONE_WEEK);
       const lastSunday = new Date(monday.getTime() - ONE_DAY);
 
-      const mondayStart = new Date(monday); mondayStart.setUTCHours(0, 0, 0, 0);
-      const sundayEnd = new Date(sunday); sundayEnd.setUTCHours(23, 59, 59, 999);
-      const lastMondayStart = new Date(lastMonday); lastMondayStart.setUTCHours(0, 0, 0, 0);
-      const lastSundayEnd = new Date(lastSunday); lastSundayEnd.setUTCHours(23, 59, 59, 999);
+      const mondayStart = new Date(monday);
+      mondayStart.setUTCHours(0, 0, 0, 0);
+      const sundayEnd = new Date(sunday);
+      sundayEnd.setUTCHours(23, 59, 59, 999);
+      const lastMondayStart = new Date(lastMonday);
+      lastMondayStart.setUTCHours(0, 0, 0, 0);
+      const lastSundayEnd = new Date(lastSunday);
+      lastSundayEnd.setUTCHours(23, 59, 59, 999);
 
       const getPeriod = (dt: Date): string => {
         if (dt >= lastMondayStart && dt <= lastSundayEnd) return 'last-week';
@@ -95,7 +115,10 @@ export class SnapshotBuilder {
         currentDateTime: fmt.format(now),
         thisWeek: fmtDate(monday) + ' to ' + fmtDate(sunday),
         lastWeek: fmtDate(lastMonday) + ' to ' + fmtDate(lastSunday),
-        thisWeekend: fmtDate(new Date(monday.getTime() + 5 * ONE_DAY)) + ' - ' + fmtDate(sunday),
+        thisWeekend:
+          fmtDate(new Date(monday.getTime() + 5 * ONE_DAY)) +
+          ' - ' +
+          fmtDate(sunday),
 
         myEvents: userEvents.map((e) => {
           const isOrganizer = e.organizerId === userId;
@@ -111,7 +134,9 @@ export class SnapshotBuilder {
             tags: e.tags.map((et) => et.tag.name),
             attendeeCount: e.participants.length,
             ...(isOrganizer && {
-              attendees: e.participants.map((p) => `${p.user.firstName} ${p.user.lastName}`),
+              attendees: e.participants.map(
+                (p) => `${p.user.firstName} ${p.user.lastName}`,
+              ),
             }),
           };
         }),
@@ -135,4 +160,3 @@ export class SnapshotBuilder {
     }
   }
 }
-

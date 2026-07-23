@@ -10,7 +10,7 @@ import { PrismaService } from '../infra/database/prisma.service';
 
 @Injectable()
 export class TagsService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<Tag[]> {
     return this.prisma.tag.findMany({ orderBy: { name: 'asc' } });
@@ -34,7 +34,9 @@ export class TagsService {
     tagIds: string[],
     requestingUserId: string,
   ): Promise<void> {
-    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+    });
     if (!event) {
       throw new NotFoundException('Event not found');
     }
@@ -43,7 +45,9 @@ export class TagsService {
     }
 
     if (tagIds.length > 5) {
-      throw new UnprocessableEntityException('Maximum 5 tags allowed per event');
+      throw new UnprocessableEntityException(
+        'Maximum 5 tags allowed per event',
+      );
     }
 
     if (tagIds.length > 0) {
@@ -51,7 +55,9 @@ export class TagsService {
         where: { id: { in: tagIds } },
       });
       if (existing.length !== tagIds.length) {
-        throw new UnprocessableEntityException('One or more tag IDs are invalid');
+        throw new UnprocessableEntityException(
+          'One or more tag IDs are invalid',
+        );
       }
     }
 

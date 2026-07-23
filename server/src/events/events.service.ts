@@ -5,11 +5,12 @@ import { PrismaService } from '../infra/database/prisma.service';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createEventDto: CreateEventDto, organizerId: string) {
     return this.prisma.$transaction(async (tx) => {
-      const { title, description, location, capacity, isPublic, dateTime } = createEventDto;
+      const { title, description, location, capacity, isPublic, dateTime } =
+        createEventDto;
 
       const event = await tx.event.create({
         data: {
@@ -46,9 +47,11 @@ export class EventsService {
         _count: {
           select: { participants: true },
         },
-        participants: userId ? {
-          where: { userId },
-        } : false,
+        participants: userId
+          ? {
+              where: { userId },
+            }
+          : false,
         organizer: {
           select: {
             id: true,
@@ -68,7 +71,9 @@ export class EventsService {
     return events.map((event) => ({
       ...event,
       participantCount: event._count.participants,
-      isFull: event.capacity ? event._count.participants >= event.capacity : false,
+      isFull: event.capacity
+        ? event._count.participants >= event.capacity
+        : false,
       firstTagColor: event.tags[0]?.tag?.colorHex ?? null,
     }));
   }
@@ -111,7 +116,9 @@ export class EventsService {
     return {
       ...event,
       participantCount: event._count.participants,
-      isFull: event.capacity ? event._count.participants >= event.capacity : false,
+      isFull: event.capacity
+        ? event._count.participants >= event.capacity
+        : false,
     };
   }
 
@@ -153,7 +160,11 @@ export class EventsService {
     });
   }
 
-  async update(id: string, updateEventDto: UpdateEventDto, organizerId: string) {
+  async update(
+    id: string,
+    updateEventDto: UpdateEventDto,
+    organizerId: string,
+  ) {
     const event = await this.prisma.event.findUnique({ where: { id } });
     if (!event || event.organizerId !== organizerId) {
       throw new ForbiddenException('Not authorized to update this event');
@@ -163,7 +174,9 @@ export class EventsService {
       where: { id },
       data: {
         ...updateEventDto,
-        dateTime: updateEventDto.dateTime ? new Date(updateEventDto.dateTime) : undefined,
+        dateTime: updateEventDto.dateTime
+          ? new Date(updateEventDto.dateTime)
+          : undefined,
       },
       include: {
         tags: {

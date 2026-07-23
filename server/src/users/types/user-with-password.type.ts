@@ -1,5 +1,5 @@
-import { User } from "../entities/user.entity";
+import { User } from '../entities/user.entity';
 
-type UserWithPassword = User & {password: string};
+type UserWithPassword = User & { password: string };
 
-export type {UserWithPassword};
+export type { UserWithPassword };

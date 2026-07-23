@@ -7,22 +7,25 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-    constructor() {
-        const pool = new pg.Pool({
-            connectionString: process.env.DATABASE_URL,
-        });
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  constructor() {
+    const pool = new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
 
-        const adapter = new PrismaPg(pool);
+    const adapter = new PrismaPg(pool);
 
-        super({ adapter });
-    }
+    super({ adapter });
+  }
 
-    async onModuleInit() {
-        await this.$connect();
-    }
+  async onModuleInit() {
+    await this.$connect();
+  }
 
-    async onModuleDestroy() {
-        await this.$disconnect();
-    }
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
 }

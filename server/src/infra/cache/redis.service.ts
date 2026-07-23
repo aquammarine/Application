@@ -6,18 +6,18 @@ import { log } from 'console';
 
 @Injectable()
 export class RedisService extends Redis implements OnModuleDestroy {
-    constructor(){
-        const url = process.env.REDIS_URL
-        if(!url) throw new Error("REDIS_URL not set")
-        super(url);
+  constructor() {
+    const url = process.env.REDIS_URL;
+    if (!url) throw new Error('REDIS_URL not set');
+    super(url);
 
-        const logger = new Logger();
+    const logger = new Logger();
 
-        this.on("connect", () => logger.log("Redis connected"))
-        this.on("error", (err) => logger.error("Redis error", err));
-    }
+    this.on('connect', () => logger.log('Redis connected'));
+    this.on('error', (err) => logger.error('Redis error', err));
+  }
 
-    async onModuleDestroy() {
-        await this.quit();
-    }
+  async onModuleDestroy() {
+    await this.quit();
+  }
 }

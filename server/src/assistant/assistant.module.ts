@@ -10,4 +10,4 @@ import { AssistantController } from './assistant.controller';
   providers: [AssistantService, SnapshotBuilder],
   exports: [AssistantService],
 })
-export class AssistantModule { }
+export class AssistantModule {}

@@ -59,7 +59,7 @@ The EVENT DATA below contains three sections — always draw from the right one:
 
 @Injectable()
 export class AssistantService {
-  constructor(private readonly snapshotBuilder: SnapshotBuilder) { }
+  constructor(private readonly snapshotBuilder: SnapshotBuilder) {}
 
   async ask(question: string, userId: string): Promise<string> {
     const lq = question.toLowerCase().trim();
@@ -77,27 +77,33 @@ export class AssistantService {
     const timeout = setTimeout(() => controller.abort(), ONE_SECOND * 15);
 
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + process.env.GROQ_API_KEY,
+      const response = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + process.env.GROQ_API_KEY,
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-8b-instant',
+            messages,
+            max_tokens: 300,
+            temperature: 0.2,
+          }),
+          signal: controller.signal,
         },
-        body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
-          messages,
-          max_tokens: 300,
-          temperature: 0.2,
-        }),
-        signal: controller.signal,
-      });
+      );
       clearTimeout(timeout);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Groq Error Response:', errorText);
-        if (response.status === 429) return "I'm receiving too many requests. Please try again in a moment.";
-        throw new Error('Groq API error: ' + response.status + ' - ' + errorText);
+        if (response.status === 429)
+          return "I'm receiving too many requests. Please try again in a moment.";
+        throw new Error(
+          'Groq API error: ' + response.status + ' - ' + errorText,
+        );
       }
 
       const data = await response.json();

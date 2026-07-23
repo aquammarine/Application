@@ -1,31 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import type { User } from '@prisma/client';
 
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) { }
+  constructor(private readonly eventsService: EventsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new event' })
   @ApiResponse({ status: 201, description: 'Event successfully created.' })
-  async create(@Body() createEventDto: CreateEventDto, @CurrentUser() user: User) {
+  async create(
+    @Body() createEventDto: CreateEventDto,
+    @CurrentUser() user: User,
+  ) {
     return await this.eventsService.create(createEventDto, user.id);
   }
 
   @Get('public')
   @ApiOperation({ summary: 'List all public events' })
   @ApiResponse({ status: 200, description: 'Return all public events.' })
-  @ApiQuery({ name: 'tags', required: false, description: 'Comma-separated tag IDs' })
-  async findAllPublic(@CurrentUser() user?: User, @Query('tags') tagsParam?: string) {
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    description: 'Comma-separated tag IDs',
+  })
+  async findAllPublic(
+    @CurrentUser() user?: User,
+    @Query('tags') tagsParam?: string,
+  ) {
     const tagIds = tagsParam ? tagsParam.split(',').filter(Boolean) : undefined;
     return await this.eventsService.findAllPublic(user?.id, tagIds);
   }
@@ -33,7 +62,9 @@ export class EventsController {
   @Get('my')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'List events organized or joined by the current user' })
+  @ApiOperation({
+    summary: 'List events organized or joined by the current user',
+  })
   @ApiResponse({ status: 200, description: 'Return user events.' })
   async findAllMy(@CurrentUser() user: User) {
     return await this.eventsService.findMyEvents(user.id);
@@ -74,8 +105,15 @@ export class EventsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update event details' })
   @ApiResponse({ status: 200, description: 'Event successfully updated.' })
-  @ApiResponse({ status: 403, description: 'Not authorized to update this event.' })
-  async update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @CurrentUser() user: User) {
+  @ApiResponse({
+    status: 403,
+    description: 'Not authorized to update this event.',
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateEventDto: UpdateEventDto,
+    @CurrentUser() user: User,
+  ) {
     return await this.eventsService.update(id, updateEventDto, user.id);
   }
 
@@ -85,7 +123,10 @@ export class EventsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an event' })
   @ApiResponse({ status: 204, description: 'Event successfully deleted.' })
-  @ApiResponse({ status: 403, description: 'Not authorized to delete this event.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Not authorized to delete this event.',
+  })
   async remove(@Param('id') id: string, @CurrentUser() user: User) {
     return await this.eventsService.remove(id, user.id);
   }

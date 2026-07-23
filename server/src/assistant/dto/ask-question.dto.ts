@@ -3,7 +3,7 @@ import { IsString, MinLength, MaxLength } from 'class-validator';
 
 export class AskQuestionDto {
   @ApiProperty({
-    example: "What events am I attending this week?",
+    example: 'What events am I attending this week?',
     description: 'Natural language question about events (3-500 chars)',
   })
   @IsString()

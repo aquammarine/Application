@@ -1,5 +1,11 @@
 import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AssistantService } from './assistant.service';
 import { AskQuestionDto } from './dto/ask-question.dto';
@@ -9,10 +15,12 @@ import { AskQuestionDto } from './dto/ask-question.dto';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AssistantController {
-  constructor(private readonly assistantService: AssistantService) { }
+  constructor(private readonly assistantService: AssistantService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Ask a natural-language question about your events' })
+  @ApiOperation({
+    summary: 'Ask a natural-language question about your events',
+  })
   @ApiBody({ type: AskQuestionDto })
   @ApiResponse({
     status: 200,
@@ -21,7 +29,10 @@ export class AssistantController {
   })
   @ApiResponse({ status: 401, description: 'Not authenticated' })
   @ApiResponse({ status: 422, description: 'Question too short or too long' })
-  async ask(@Body() dto: AskQuestionDto, @Request() req: { user: { id: string } }) {
+  async ask(
+    @Body() dto: AskQuestionDto,
+    @Request() req: { user: { id: string } },
+  ) {
     const answer = await this.assistantService.ask(dto.question, req.user.id);
     return { answer };
   }

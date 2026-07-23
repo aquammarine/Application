@@ -9,4 +9,4 @@ import { PrismaModule } from '../infra/database/prisma.module';
   controllers: [EventsController],
   providers: [EventsService],
 })
-export class EventsModule { }
+export class EventsModule {}

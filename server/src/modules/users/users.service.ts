@@ -16,12 +16,20 @@ export class UsersService {
     const user = await this.usersRepository.findById(id);
 
     if(!user){
-      throw new NotFoundException("User doesn't exists");
+      throw new NotFoundException("User doesn't exist");
     }
 
     return user;
   }
   
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email); 
+
+    if(!user) throw new NotFoundException("User doesn't exist");
+
+    return user;
+  }
+
   async findAll(): Promise<User[] | null>{
     return await this.usersRepository.findAll();
   }

@@ -18,6 +18,10 @@ export class UsersRepository {
         return await this.prisma.user.findUnique({ where: { id } });
     }
 
+    async findByEmail(email: string) {
+        return await this.prisma.user.findFirst({ where: { email } })
+    }
+
     async update(id: string, user: Prisma.UserUpdateInput) {
         return await this.prisma.user.update({
         where: { id },

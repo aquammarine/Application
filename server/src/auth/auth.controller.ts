@@ -23,6 +23,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { RefreshTokenPayload } from './types/refresh-token-payload.types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -107,7 +108,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ accessToken: string }> {
-    const staleRefreshToken = req.cookies['refresh_token'];
+    const staleRefreshToken = req.user as RefreshTokenPayload;
 
     const { accessToken, refreshToken } =
       await this.authService.refreshTokens(staleRefreshToken);

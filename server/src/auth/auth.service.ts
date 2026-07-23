@@ -10,6 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 import bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { RedisService } from 'src/infra/cache/redis.service';
+import { RefreshTokenPayload } from './types/refresh-token-payload.types';
 
 @Injectable()
 export class AuthService {
@@ -101,15 +102,9 @@ export class AuthService {
     await this.redisService.del(`refresh:${id}:${jti}`);
   }
 
-  async refreshTokens(refreshToken: string) {
-    if (!refreshToken) throw new UnauthorizedException();
-
-    const payload = await this.jwtService.verifyAsync(refreshToken, {
-      secret: process.env.JWT_REFRESH_SECRET,
-    });
-    const { sub: id, jti } = payload;
-
-    const key = `refresh:${id}:${jti}`;
+  async refreshTokens(staleRefreshToken: RefreshTokenPayload) {
+    const {sub, jti, email, refreshToken} = staleRefreshToken;
+    const key = `refresh:${sub}:${jti}`;
     const storedHash = await this.redisService.get(key);
 
     if (!storedHash) throw new BadRequestException('Access Denied');
@@ -118,6 +113,6 @@ export class AuthService {
     if (!matches) throw new BadRequestException('Access Denied');
 
     await this.redisService.del(key);
-    return await this.generateTokens(id, payload.email);
+    return await this.generateTokens(sub, email);
   }
 }

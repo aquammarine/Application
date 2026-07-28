@@ -13,22 +13,22 @@ export class CreateEventDto {
   @ApiProperty({ example: 'Tech Conference 2024' })
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @ApiProperty({ example: 'A conference about latest tech trends' })
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @ApiProperty({ example: '2024-12-01T10:00:00Z' })
   @IsDateString()
   @IsNotEmpty()
-  dateTime: string;
+  dateTime!: string;
 
   @ApiProperty({ example: 'San Francisco, CA' })
   @IsString()
   @IsNotEmpty()
-  location: string;
+  location!: string;
 
   @ApiPropertyOptional({ example: 100 })
   @IsOptional()

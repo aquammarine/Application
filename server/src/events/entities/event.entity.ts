@@ -1,34 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Event as PrismaEvent } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class Event implements PrismaEvent {
+export class Event {
   @ApiProperty()
-  id: string;
-
-  @ApiProperty()
-  title: string;
+  id!: string;
 
   @ApiProperty()
-  description: string;
+  title!: string;
 
   @ApiProperty()
-  dateTime: Date;
+  description!: string;
 
   @ApiProperty()
-  location: string;
+  dateTime!: Date;
 
   @ApiProperty()
-  capacity: number;
+  location!: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  capacity!: number | null;
 
   @ApiProperty()
-  isPublic: boolean;
+  isPublic!: boolean;
 
   @ApiProperty()
-  organizerId: string;
+  organizerId!: string;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

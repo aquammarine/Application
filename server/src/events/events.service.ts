@@ -1,238 +1,81 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
+import { EventsRepository } from './events.repository';
+import { UserRole } from './types/types';
+import { Event } from './entities/event.entity';
+import { EventListItemDto } from './dto/event-list-item.dto';
+import { EventDetailDto } from './dto/event-detail.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { PrismaService } from '../infra/database/prisma.service';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly eventsRepository: EventsRepository) {}
 
-  async create(createEventDto: CreateEventDto, organizerId: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const { title, description, location, capacity, isPublic, dateTime } =
-        createEventDto;
-
-      const event = await tx.event.create({
-        data: {
-          title,
-          description,
-          location,
-          capacity: capacity ? Number(capacity) : null,
-          isPublic: isPublic !== undefined ? isPublic : true,
-          dateTime: new Date(dateTime),
-          organizerId,
-        },
-      });
-
-      await tx.participant.create({
-        data: {
-          eventId: event.id,
-          userId: organizerId,
-        },
-      });
-
-      return event;
-    });
-  }
-
-  async findAllPublic(userId?: string, tagIds?: string[]) {
-    const events = await this.prisma.event.findMany({
-      where: {
-        isPublic: true,
-        ...(tagIds && tagIds.length > 0
-          ? { tags: { some: { tagId: { in: tagIds } } } }
-          : {}),
-      },
-      include: {
-        _count: {
-          select: { participants: true },
-        },
-        participants: userId
-          ? {
-              where: { userId },
-            }
-          : false,
-        organizer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-      orderBy: { dateTime: 'asc' },
-    });
-
-    return events.map((event) => ({
-      ...event,
-      participantCount: event._count.participants,
-      isFull: event.capacity
-        ? event._count.participants >= event.capacity
-        : false,
-      firstTagColor: event.tags[0]?.tag?.colorHex ?? null,
-    }));
-  }
-
-  async findOne(id: string, userId?: string) {
-    const event = await this.prisma.event.findUnique({
-      where: { id },
-      include: {
-        _count: {
-          select: { participants: true },
-        },
-        participants: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-        organizer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
-
-    if (!event) return null;
-
-    return {
-      ...event,
-      participantCount: event._count.participants,
-      isFull: event.capacity
-        ? event._count.participants >= event.capacity
-        : false,
-    };
-  }
-
-  async join(eventId: string, userId: string) {
-    const event = await this.prisma.event.findUnique({
-      where: { id: eventId },
-      include: {
-        _count: {
-          select: { participants: true },
-        },
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
-
-    if (!event) throw new Error('Event not found');
-    if (event.capacity && event._count.participants >= event.capacity) {
-      throw new Error('Event is full');
-    }
-
-    return this.prisma.participant.create({
-      data: {
-        eventId,
-        userId,
-      },
-    });
-  }
-
-  async leave(eventId: string, userId: string) {
-    return this.prisma.participant.delete({
-      where: {
-        userId_eventId: {
-          userId,
-          eventId,
-        },
-      },
-    });
+  async create(dto: CreateEventDto, organizerId: string): Promise<Event> {
+    return this.eventsRepository.create(dto, organizerId);
   }
 
   async update(
-    id: string,
-    updateEventDto: UpdateEventDto,
-    organizerId: string,
-  ) {
-    const event = await this.prisma.event.findUnique({ where: { id } });
-    if (!event || event.organizerId !== organizerId) {
-      throw new ForbiddenException('Not authorized to update this event');
-    }
+    eventId: string,
+    userId: string,
+    dto: UpdateEventDto,
+  ): Promise<Event> {
+    const event = await this.findById(eventId);
+    if (userId !== event.organizerId) throw new ForbiddenException();
 
-    return this.prisma.event.update({
-      where: { id },
-      data: {
-        ...updateEventDto,
-        dateTime: updateEventDto.dateTime
-          ? new Date(updateEventDto.dateTime)
-          : undefined,
-      },
-      include: {
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
+    return await this.eventsRepository.update(eventId, dto);
   }
 
-  async remove(id: string, organizerId: string) {
-    const event = await this.prisma.event.findUnique({ where: { id } });
-    if (!event || event.organizerId !== organizerId) {
-      throw new ForbiddenException('Not authorized to delete this event');
+  findMyEvents(userId: string, role?: UserRole): Promise<EventListItemDto[]> {
+    if (role === 'participant') {
+      return this.eventsRepository.findByParticipant(userId);
+    } else if (role === 'organizer') {
+      return this.eventsRepository.findByOrganizer(userId);
+    } else {
+      return this.eventsRepository.findByOrganizerOrParticipant(userId);
     }
-
-    return this.prisma.event.delete({
-      where: { id },
-      include: {
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
   }
 
-  async findMyEvents(userId: string) {
-    return this.prisma.event.findMany({
-      where: {
-        OR: [
-          { organizerId: userId },
-          {
-            participants: {
-              some: { userId },
-            },
-          },
-        ],
-      },
-      include: {
-        _count: {
-          select: { participants: true },
-        },
-        organizer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-        tags: {
-          include: { tag: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-      orderBy: { dateTime: 'asc' },
-    });
+  async findById(id: string): Promise<EventDetailDto> {
+    const event = await this.eventsRepository.findById(id);
+    if (!event) throw new NotFoundException();
+
+    return event;
+  }
+
+  findAllPublic(tagIds?: string[]): Promise<EventListItemDto[]> {
+    return this.eventsRepository.findAllPublic(tagIds);
+  }
+
+  async join(eventId: string, userId: string): Promise<void> {
+    const isParticipant = await this.eventsRepository.isParticipant(
+      eventId,
+      userId,
+    );
+    if (isParticipant) throw new BadRequestException();
+
+    await this.eventsRepository.join(eventId, userId);
+  }
+
+  async leave(eventId: string, userId: string): Promise<void> {
+    const isParticipant = await this.eventsRepository.isParticipant(
+      eventId,
+      userId,
+    );
+    if (!isParticipant) throw new BadRequestException();
+
+    await this.eventsRepository.leave(eventId, userId);
+  }
+
+  async remove(id: string, organizerId: string): Promise<void> {
+    const event = await this.findById(id);
+    if (event.organizerId !== organizerId) throw new ForbiddenException();
+
+    await this.eventsRepository.remove(id);
   }
 }

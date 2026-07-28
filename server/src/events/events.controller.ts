@@ -24,7 +24,9 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import type { User } from '@prisma/client';
+import type { UserRole } from './types/types';
+import { User } from 'src/users/entities/user.entity';
+import { ParseTagIdsPipe } from './pipes/parse-tag-ids.pipe';
 
 @ApiTags('events')
 @Controller('events')
@@ -51,12 +53,8 @@ export class EventsController {
     required: false,
     description: 'Comma-separated tag IDs',
   })
-  async findAllPublic(
-    @CurrentUser() user?: User,
-    @Query('tags') tagsParam?: string,
-  ) {
-    const tagIds = tagsParam ? tagsParam.split(',').filter(Boolean) : undefined;
-    return await this.eventsService.findAllPublic(user?.id, tagIds);
+  async findAllPublic(@Query('tags', ParseTagIdsPipe) tagIds?: string[]) {
+    return await this.eventsService.findAllPublic(tagIds);
   }
 
   @Get('my')
@@ -66,8 +64,8 @@ export class EventsController {
     summary: 'List events organized or joined by the current user',
   })
   @ApiResponse({ status: 200, description: 'Return user events.' })
-  async findAllMy(@CurrentUser() user: User) {
-    return await this.eventsService.findMyEvents(user.id);
+  async findMyEvents(@CurrentUser() user: User, @Query('role') role?: UserRole) {
+    return await this.eventsService.findMyEvents(user.id, role);
   }
 
   @Get(':id')
@@ -75,19 +73,22 @@ export class EventsController {
   @ApiParam({ name: 'id', description: 'Event UUID' })
   @ApiResponse({ status: 200, description: 'Return event details.' })
   @ApiResponse({ status: 404, description: 'Event not found.' })
-  async findOne(@Param('id') id: string, @CurrentUser() user?: User) {
-    return await this.eventsService.findOne(id, user?.id);
+  async findOne(@Param('id') id: string) {
+    return await this.eventsService.findById(id);
   }
 
   @Post(':id/join')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Join an event' })
-  @ApiResponse({ status: 200, description: 'Successfully joined event.' })
+  @ApiResponse({ status: 204, description: 'Successfully joined event.' })
   @ApiResponse({ status: 400, description: 'Event is full or already joined.' })
-  async join(@Param('id') id: string, @CurrentUser() user: User) {
-    return await this.eventsService.join(id, user.id);
+  async join(
+    @Param('id') eventId: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    await this.eventsService.join(eventId, user.id);
   }
 
   @Post(':id/leave')
@@ -114,7 +115,7 @@ export class EventsController {
     @Body() updateEventDto: UpdateEventDto,
     @CurrentUser() user: User,
   ) {
-    return await this.eventsService.update(id, updateEventDto, user.id);
+    return await this.eventsService.update(id, user.id, updateEventDto);
   }
 
   @Delete(':id')

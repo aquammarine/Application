@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -35,7 +34,7 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user.id, user.email);
 
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
 
     return {
       user: safeUser,
@@ -96,9 +95,10 @@ export class AuthService {
   }
 
   async logout(refreshToken: string) {
-    const { sub: id, jti } = await this.jwtService.verifyAsync(refreshToken, {
-      secret: process.env.JWT_REFRESH_SECRET,
-    });
+    const { sub: id, jti } =
+      await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
     await this.redisService.del(`refresh:${id}:${jti}`);
   }
 

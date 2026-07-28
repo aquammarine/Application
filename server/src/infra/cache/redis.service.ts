@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { OnModuleDestroy } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import { log } from 'console';
 
 @Injectable()
 export class RedisService extends Redis implements OnModuleDestroy {

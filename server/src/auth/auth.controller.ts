@@ -104,7 +104,9 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
-    const refreshToken = req.cookies['refresh_token'];
+    const refreshToken = (req.cookies as Record<string, string>)[
+      'refresh_token'
+    ];
 
     await this.authService.logout(refreshToken);
 
@@ -160,7 +162,7 @@ export class AuthController {
     type: User,
   })
   @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
-  async getMe(@CurrentUser() user: User) {
+  getMe(@CurrentUser() user: User) {
     return user;
   }
 }

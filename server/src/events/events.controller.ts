@@ -64,7 +64,10 @@ export class EventsController {
     summary: 'List events organized or joined by the current user',
   })
   @ApiResponse({ status: 200, description: 'Return user events.' })
-  async findMyEvents(@CurrentUser() user: User, @Query('role') role?: UserRole) {
+  async findMyEvents(
+    @CurrentUser() user: User,
+    @Query('role') role?: UserRole,
+  ) {
     return await this.eventsService.findMyEvents(user.id, role);
   }
 

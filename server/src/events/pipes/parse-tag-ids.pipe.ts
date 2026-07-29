@@ -11,10 +11,7 @@ export class ParseTagIdsPipe implements PipeTransform<
   string | undefined,
   string[] | undefined
 > {
-  transform(
-    value: string | undefined,
-    metadata: ArgumentMetadata,
-  ): string[] | undefined {
+  transform(value: string | undefined): string[] | undefined {
     if (!value) return undefined;
 
     const ids = value

@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
+  extensions = [citext]
 }
 
 model User {
@@ -45,9 +47,8 @@ model Participant {
 }
 
 model Tag {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  nameLower String     @unique
+  id        String     @id         @default(uuid())
+  name      String     @unique     @db.Citext
   colorHex  String?    @db.Char(7)
   createdAt DateTime   @default(now())
   events    EventTag[]

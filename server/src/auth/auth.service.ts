@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -99,6 +100,12 @@ export class AuthService {
       await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
+
+    const storedToken = await this.redisService.get(
+      `refreshToken:${id}:${jti}`,
+    );
+    if (!storedToken) throw new UnauthorizedException();
+
     await this.redisService.del(`refresh:${id}:${jti}`);
   }
 

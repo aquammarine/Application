@@ -19,7 +19,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
           statusCode: status,
           timestamp,
           path,
-          message: `Unique constraint failed on the fields: ${(exception.meta?.target as string[] | undefined)?.join(', ')}`,
+          message: `A record with this value already exists`,
         });
         break;
       }

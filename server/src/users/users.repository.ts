@@ -27,15 +27,4 @@ export class UsersRepository {
   async findByEmail(email: string) {
     return await this.prisma.user.findFirst({ where: { email } });
   }
-
-  async update(id: string, user: Prisma.UserUpdateInput) {
-    return await this.prisma.user.update({
-      where: { id },
-      data: user,
-    });
-  }
-
-  async remove(id: string) {
-    return await this.prisma.user.delete({ where: { id } });
-  }
 }

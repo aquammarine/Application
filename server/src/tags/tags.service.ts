@@ -5,42 +5,43 @@ import {
   ForbiddenException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Tag } from '@prisma/client';
-import { PrismaService } from '../infra/database/prisma.service';
+import { TagsRepository } from './tags.repository';
+import { TagDto } from './dto/tag.dto';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class TagsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly tagsRepository: TagsRepository,
+    private readonly eventsService: EventsService,
+  ) {}
 
-  async findAll(): Promise<Tag[]> {
-    return this.prisma.tag.findMany({ orderBy: { name: 'asc' } });
+  async findAll(): Promise<TagDto[]> {
+    return this.tagsRepository.findAll();
   }
 
-  async create(name: string, colorHex?: string): Promise<Tag> {
-    const nameLower = name.trim().toLowerCase();
+  async create(name: string, colorHex?: string): Promise<TagDto> {
+    const existing = await this.tagsRepository.findByName(name);
 
-    const existing = await this.prisma.tag.findUnique({ where: { nameLower } });
     if (existing) {
       throw new ConflictException('Tag already exists (case-insensitive)');
     }
 
-    return this.prisma.tag.create({
-      data: { name: name.trim(), nameLower, colorHex },
-    });
+    return this.tagsRepository.create(name, colorHex);
   }
 
   async updateEventTags(
     eventId: string,
     tagIds: string[],
-    requestingUserId: string,
+    userId: string,
   ): Promise<void> {
-    const event = await this.prisma.event.findUnique({
-      where: { id: eventId },
-    });
+    const event = await this.eventsService.findById(eventId);
+
     if (!event) {
       throw new NotFoundException('Event not found');
     }
-    if (event.organizerId !== requestingUserId) {
+
+    if (event.organizerId !== userId) {
       throw new ForbiddenException('Only the organizer can modify tags');
     }
 
@@ -51,9 +52,8 @@ export class TagsService {
     }
 
     if (tagIds.length > 0) {
-      const existing = await this.prisma.tag.findMany({
-        where: { id: { in: tagIds } },
-      });
+      const existing = await this.tagsRepository.findByIds(tagIds);
+
       if (existing.length !== tagIds.length) {
         throw new UnprocessableEntityException(
           'One or more tag IDs are invalid',
@@ -61,12 +61,6 @@ export class TagsService {
       }
     }
 
-    await this.prisma.$transaction([
-      this.prisma.eventTag.deleteMany({ where: { eventId } }),
-      this.prisma.eventTag.createMany({
-        data: tagIds.map((tagId, i) => ({ eventId, tagId, position: i + 1 })),
-        skipDuplicates: true,
-      }),
-    ]);
+    await this.tagsRepository.updateEventTags(eventId, tagIds);
   }
 }

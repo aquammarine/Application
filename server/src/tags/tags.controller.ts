@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Body,
-  Param,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { UpdateEventTagsDto } from './dto/update-event-tags.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -17,6 +9,9 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { TagDto } from './dto/tag.dto';
 
 @ApiTags('tags')
 @Controller()
@@ -26,8 +21,8 @@ export class TagsController {
   @Get('tags')
   @ApiOperation({ summary: 'Get all available tags' })
   @ApiResponse({ status: 200, description: 'List of all tags' })
-  async findAll() {
-    return await this.tagsService.findAll();
+  async findAll(): Promise<TagDto[]> {
+    return this.tagsService.findAll();
   }
 
   @Patch('events/:id/tags')
@@ -44,9 +39,8 @@ export class TagsController {
   async updateEventTags(
     @Param('id') eventId: string,
     @Body() dto: UpdateEventTagsDto,
-    @Request() req: { user: { id: string } },
-  ) {
-    await this.tagsService.updateEventTags(eventId, dto.tagIds, req.user.id);
-    return { message: 'Tags updated successfully' };
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return this.tagsService.updateEventTags(eventId, dto.tagIds, user.id);
   }
 }

@@ -27,4 +27,8 @@ export class UsersRepository {
   async findByEmail(email: string) {
     return await this.prisma.user.findFirst({ where: { email } });
   }
+
+  async remove(id: string) {
+    return this.prisma.user.delete({ where: { id } });
+  }
 }

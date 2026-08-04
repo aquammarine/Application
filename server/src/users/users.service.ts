@@ -27,10 +27,6 @@ export class UsersService {
     return user;
   }
 
-  async findAll(): Promise<User[] | []> {
-    return await this.usersRepository.findAll();
-  }
-
   async remove(id: string) {
     const user = await this.findById(id);
 

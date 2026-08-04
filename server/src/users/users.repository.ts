@@ -13,10 +13,6 @@ export class UsersRepository {
     });
   }
 
-  async findAll() {
-    return await this.prisma.user.findMany({ omit: { password: true } });
-  }
-
   async findById(id: string) {
     return await this.prisma.user.findUnique({
       where: { id },

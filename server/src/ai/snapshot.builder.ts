@@ -6,13 +6,10 @@ import { TagsService } from 'src/tags/tags.service';
 import {
   formatDateAndTime,
   formatDateOnly,
-  getPeriod,
   getWeekBoundaries,
   toMyEvents,
   toPublicEvents,
 } from './snapshot.utils';
-import type { WeekBoundaries } from './interfaces/snapshot.interfaces';
-import { Event } from 'src/events/entities/event.entity';
 
 @Injectable()
 export class SnapshotBuilder {

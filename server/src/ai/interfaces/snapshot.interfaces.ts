@@ -1,5 +1,5 @@
 import { Participant } from 'src/common/interfaces/user.interface';
-import { getWeekBoundaries } from '../snapshot.utils';
+import { getWeekBoundaries } from '../utils/snapshot.utils';
 import { EventTag } from 'src/common/interfaces/tag.interface';
 
 type WeekBoundaries = ReturnType<typeof getWeekBoundaries>;

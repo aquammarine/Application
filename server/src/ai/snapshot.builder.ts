@@ -9,7 +9,7 @@ import {
   getWeekBoundaries,
   toMyEvents,
   toPublicEvents,
-} from './snapshot.utils';
+} from './utils/snapshot.utils';
 
 @Injectable()
 export class SnapshotBuilder {

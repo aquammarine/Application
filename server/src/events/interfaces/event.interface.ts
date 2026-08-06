@@ -20,10 +20,10 @@ interface EventWithDetails extends Event {
   participants: Participant[];
 }
 
-interface EventListItem { 
-    _count: { participants: number };
-    organizer: PublicUser,
-    tags: EventTag[]
+interface EventListItem {
+  _count: { participants: number };
+  organizer: PublicUser;
+  tags: EventTag[];
 }
 
 export type { Event, EventWithDetails, EventListItem };

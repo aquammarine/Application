@@ -10,7 +10,7 @@ import {
   DiscoverableEvent,
   UserEvents,
   WeekBoundaries,
-} from './interfaces/snapshot.interfaces';
+} from '../interfaces/snapshot.interfaces';
 
 function getWeekBoundaries(date: Date) {
   const monday = startOfWeek(date, { weekStartsOn: 1 });

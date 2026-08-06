@@ -10,8 +10,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { TagDto } from './dto/tag.dto';
+import type { User } from 'src/common/interfaces/user.interface';
 
 @ApiTags('tags')
 @Controller()

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SnapshotBuilder } from './snapshot.builder';
+import { SnapshotBuilder } from '../ai/snapshot.builder';
 import { ONE_SECOND } from 'src/common/constants/time.constants';
 
 const SYSTEM_PROMPT = `You are a friendly and helpful personal assistant for an event management app.

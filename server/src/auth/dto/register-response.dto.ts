@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from 'src/users/entities/user.entity';
+import type { User } from 'src/common/interfaces/user.interface';
 
 export class RegisterResponseDto {
-  @ApiProperty({ type: User })
+  @ApiProperty()
   user!: User;
 
   @ApiProperty()

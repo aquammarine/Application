@@ -7,10 +7,12 @@ import {
 import { CreateEventDto } from './dto/create-event.dto';
 import { EventsRepository } from './events.repository';
 import { UserRole } from './types/types';
-import { Event } from './entities/event.entity';
-import { EventListItemDto } from './dto/event-list-item.dto';
-import { EventDetailDto } from './dto/event-detail.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import {
+  Event,
+  EventListItem,
+  EventWithDetails,
+} from './interfaces/event.interface';
 
 @Injectable()
 export class EventsService {
@@ -31,7 +33,7 @@ export class EventsService {
     return await this.eventsRepository.update(eventId, dto);
   }
 
-  findMyEvents(userId: string, role?: UserRole): Promise<EventListItemDto[]> {
+  findMyEvents(userId: string, role?: UserRole): Promise<EventListItem[]> {
     if (role === 'participant') {
       return this.eventsRepository.findByParticipant(userId);
     } else if (role === 'organizer') {
@@ -41,14 +43,14 @@ export class EventsService {
     }
   }
 
-  async findById(id: string): Promise<EventDetailDto> {
+  async findById(id: string): Promise<EventWithDetails> {
     const event = await this.eventsRepository.findById(id);
     if (!event) throw new NotFoundException();
 
     return event;
   }
 
-  findAllPublic(tagIds?: string[]): Promise<EventListItemDto[]> {
+  findAllPublic(tagIds?: string[]): Promise<EventListItem[]> {
     return this.eventsRepository.findAllPublic(tagIds);
   }
 

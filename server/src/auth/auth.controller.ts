@@ -27,7 +27,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { RefreshTokenPayload } from './types/refresh-token-payload.types';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from 'src/users/entities/user.entity';
+import type { User } from 'src/common/interfaces/user.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -159,7 +159,6 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User successfully fetched',
-    type: User,
   })
   @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   getMe(@CurrentUser() user: User) {

@@ -24,9 +24,9 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import type { UserRole } from './types/types';
-import { User } from 'src/users/entities/user.entity';
 import { ParseTagIdsPipe } from './pipes/parse-tag-ids.pipe';
+import type { UserRole } from './types/types';
+import type { User } from 'src/common/interfaces/user.interface';
 
 @ApiTags('events')
 @Controller('events')

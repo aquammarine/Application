@@ -17,25 +17,25 @@ async function main() {
     console.log('Starting seed process...');
 
     const tagsToSeed = [
-        { name: 'Tech', nameLower: 'tech', colorHex: '#3B82F6' },
-        { name: 'Art', nameLower: 'art', colorHex: '#EC4899' },
-        { name: 'Business', nameLower: 'business', colorHex: '#10B981' },
-        { name: 'Music', nameLower: 'music', colorHex: '#8B5CF6' },
-        { name: 'Sports', nameLower: 'sports', colorHex: '#F59E0B' },
-        { name: 'Health', nameLower: 'health', colorHex: '#EF4444' },
-        { name: 'Education', nameLower: 'education', colorHex: '#06B6D4' },
-        { name: 'Food', nameLower: 'food', colorHex: '#F97316' },
+        { name: 'Tech', colorHex: '#3B82F6' },
+        { name: 'Art', colorHex: '#EC4899' },
+        { name: 'Business', colorHex: '#10B981' },
+        { name: 'Music', colorHex: '#8B5CF6' },
+        { name: 'Sports', colorHex: '#F59E0B' },
+        { name: 'Health', colorHex: '#EF4444' },
+        { name: 'Education', colorHex: '#06B6D4' },
+        { name: 'Food', colorHex: '#F97316' },
     ];
 
     const tagsMap: Record<string, string> = {};
 
     for (const tag of tagsToSeed) {
         const upserted = await prisma.tag.upsert({
-            where: { nameLower: tag.nameLower },
+            where: { name: tag.name },
             update: { colorHex: tag.colorHex },
             create: tag,
         });
-        tagsMap[tag.nameLower] = upserted.id;
+        tagsMap[tag.name] = upserted.id;
     }
 
     console.log(`Upserted ${Object.keys(tagsMap).length} tags`);

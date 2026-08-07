@@ -17,7 +17,6 @@ export class TagsRepository {
     return this.prisma.tag.findMany({ orderBy: { name: 'asc' } });
   }
 
-
   // UNUSED BY NOW
   async findByName(name: string): Promise<Tag | null> {
     return this.prisma.tag.findUnique({ where: { name } });

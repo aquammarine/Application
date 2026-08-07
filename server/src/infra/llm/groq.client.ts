@@ -52,7 +52,7 @@ export class GroqClient implements LlmClient {
         throw new LlmTimeoutError();
       if (err instanceof OpenAi.APIError) {
         if (err.status === 429) throw new LlmRateLimitError();
-        throw new LlmRequestError(err.status, err.message);
+        throw new LlmRequestError(Number(err.status), String(err.message));
       }
       throw err;
     }

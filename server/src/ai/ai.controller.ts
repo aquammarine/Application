@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AiService } from 'src/ai/ai.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import type { User } from 'src/common/interfaces/user.interface';
-import { LlmExceptionFilter } from 'src/common/filters/llm-exception.fileter';
+import { LlmExceptionFilter } from 'src/common/filters/llm-exception.filter';
 
 @ApiTags('ai')
 @Controller('ai')

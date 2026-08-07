@@ -20,6 +20,7 @@ export class TagsService {
     return this.tagsRepository.findAll();
   }
 
+  // UNUSED BY NOW
   async create(name: string, colorHex?: string): Promise<TagDto> {
     const existing = await this.tagsRepository.findByName(name);
 

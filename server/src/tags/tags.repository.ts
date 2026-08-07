@@ -6,6 +6,7 @@ import { PrismaService } from 'src/infra/database/prisma.service';
 export class TagsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  // UNUSED BY NOW
   async create(name: string, colorHex?: string): Promise<Tag> {
     return this.prisma.tag.create({
       data: { name, colorHex },
@@ -16,6 +17,8 @@ export class TagsRepository {
     return this.prisma.tag.findMany({ orderBy: { name: 'asc' } });
   }
 
+
+  // UNUSED BY NOW
   async findByName(name: string): Promise<Tag | null> {
     return this.prisma.tag.findUnique({ where: { name } });
   }

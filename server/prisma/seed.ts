@@ -17,14 +17,14 @@ async function main() {
     console.log('Starting seed process...');
 
     const tagsToSeed = [
-        { name: 'Tech', colorHex: '#3B82F6' },
-        { name: 'Art', colorHex: '#EC4899' },
-        { name: 'Business', colorHex: '#10B981' },
-        { name: 'Music', colorHex: '#8B5CF6' },
-        { name: 'Sports', colorHex: '#F59E0B' },
-        { name: 'Health', colorHex: '#EF4444' },
-        { name: 'Education', colorHex: '#06B6D4' },
-        { name: 'Food', colorHex: '#F97316' },
+        { id: '1', name: 'Tech', colorHex: '#3B82F6' },
+        { id: '2', name: 'Art', colorHex: '#EC4899' },
+        { id: '3', name: 'Business', colorHex: '#10B981' },
+        { id: '4', name: 'Music', colorHex: '#8B5CF6' },
+        { id: '5', name: 'Sports', colorHex: '#F59E0B' },
+        { id: '6', name: 'Health', colorHex: '#EF4444' },
+        { id: '7', name: 'Education', colorHex: '#06B6D4' },
+        { id: '8', name: 'Food', colorHex: '#F97316' },
     ];
 
     const tagsMap: Record<string, string> = {};
@@ -147,26 +147,26 @@ async function main() {
     const tagAssociations: { eventId: string; tagId: string; position: number }[] = [];
     if (event1Id) {
         tagAssociations.push(
-            { eventId: event1Id, tagId: tagsMap['tech'], position: 1 },
-            { eventId: event1Id, tagId: tagsMap['business'], position: 2 },
+            { eventId: event1Id, tagId: tagsMap['Tech'], position: 1 },
+            { eventId: event1Id, tagId: tagsMap['Business'], position: 2 },
         );
     }
     if (event2Id) {
         tagAssociations.push(
-            { eventId: event2Id, tagId: tagsMap['art'], position: 1 },
-            { eventId: event2Id, tagId: tagsMap['education'], position: 2 },
+            { eventId: event2Id, tagId: tagsMap['Art'], position: 1 },
+            { eventId: event2Id, tagId: tagsMap['Education'], position: 2 },
         );
     }
     if (event3Id) {
         tagAssociations.push(
-            { eventId: event3Id, tagId: tagsMap['business'], position: 1 },
-            { eventId: event3Id, tagId: tagsMap['tech'], position: 2 },
+            { eventId: event3Id, tagId: tagsMap['Business'], position: 1 },
+            { eventId: event3Id, tagId: tagsMap['Tech'], position: 2 },
         );
     }
     if (event4Id) {
         tagAssociations.push(
-            { eventId: event4Id, tagId: tagsMap['tech'], position: 1 },
-            { eventId: event4Id, tagId: tagsMap['education'], position: 2 },
+            { eventId: event4Id, tagId: tagsMap['Tech'], position: 1 },
+            { eventId: event4Id, tagId: tagsMap['Education'], position: 2 },
         );
     }
 
